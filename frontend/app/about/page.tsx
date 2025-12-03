@@ -1,5 +1,6 @@
 import React from 'react'
 
+
 const About = () => {
     return (
         <section className='flex flex-col gap-9 py-8 px-10'>
