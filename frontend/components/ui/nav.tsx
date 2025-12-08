@@ -25,10 +25,10 @@ const Navigation = () => {
                 <ul className='flex gap-8'>
                     <Link href={"/about"}>About</Link>
                     <Link href={"/results"}>Results</Link>
-                    <li>Profile</li>
+                    <Link href={"/profile"}>Profile</Link>
                     <li
                         onClick={handleLogout}
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:underline underline-offset-5"
                     >
                         Log Out
                     </li>

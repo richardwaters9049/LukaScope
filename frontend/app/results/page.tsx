@@ -21,8 +21,6 @@ export default function ResultsPage() {
             myeloblasts: 30,
             neutrophils: 75
         },
-
-        /** ✅ Correct Next.js paths */
         imageUrl: "/images/sample_positive.png",
         shapHighlight: "/images/sample_positive.png",
 

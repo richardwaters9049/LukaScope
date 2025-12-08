@@ -135,3 +135,8 @@ button {
     #2c3f74
   );
 }
+
+ul a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
