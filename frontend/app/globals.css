@@ -124,3 +124,14 @@
 button {
   cursor: pointer;
 }
+
+.layoutbg {
+  background-image: linear-gradient(
+    to right bottom,
+    #030712,
+    #101829,
+    #182541,
+    #21325a,
+    #2c3f74
+  );
+}

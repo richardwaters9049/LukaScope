@@ -65,8 +65,8 @@ const page = () => {
                     >
                         <Card>
                             <CardTitle className="flex items-center gap-2">
-                                <ArrowUpTrayIcon className="h-8 w-8" />
-                                Upload File
+                                <ArrowUpTrayIcon className="h-5 w-5" />
+                                Upload Sample
                             </CardTitle>
 
                             <Input type="file" className='cursor-pointer' />

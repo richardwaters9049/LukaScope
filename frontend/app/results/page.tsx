@@ -4,12 +4,10 @@ import React, { useState } from 'react'
 import Nav from '@/components/ui/nav'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-
-// Heroicons
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 
 export default function ResultsPage() {
-    const [result, setResult] = useState({
+    const [result] = useState({
         sampleId: "LS-00123",
         uploadedBy: "Admin User",
         date: "2025-12-03 14:32",
@@ -23,8 +21,11 @@ export default function ResultsPage() {
             myeloblasts: 30,
             neutrophils: 75
         },
-        shapHighlight: "/images/sample_positive.png",
+
+        /** ✅ Correct Next.js paths */
         imageUrl: "/images/sample_positive.png",
+        shapHighlight: "/images/sample_positive.png",
+
         history: [
             { date: "2025-11-20", classification: "Negative", confidence: 88 },
             { date: "2025-11-10", classification: "Negative", confidence: 91 }
@@ -33,89 +34,125 @@ export default function ResultsPage() {
     })
 
     return (
-        <div className='w-full'>
+        <div className="min-h-screen">
             <Nav />
 
-            <section className='flex flex-col w-full h-full p-8 gap-8 text-white'>
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    {/* Header */}
-                    <div className='flex items-center gap-3 mb-4'>
-                        {result.classification === "Positive" ? (
-                            <XCircleIcon className='h-10 w-10 text-red-600' />
-                        ) : (
-                            <CheckCircleIcon className='h-10 w-10 text-green-600' />
-                        )}
-                        <h1 className='text-4xl font-bold'>Sample Analysis Result</h1>
+            <motion.section
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="p-6 md:p-10 space-y-8"
+            >
+
+                {/* HEADER */}
+                <div className="flex items-center gap-4">
+                    {result.classification === "Positive" ? (
+                        <XCircleIcon className="w-10 h-10 text-red-500" />
+                    ) : (
+                        <CheckCircleIcon className="w-10 h-10 text-green-500" />
+                    )}
+
+                    <div className='flex flex-col justify-evenly items-start gap-1'>
+                        <h1 className="text-3xl md:text-4xl font-bold">
+                            Sample Analysis Result
+                        </h1>
+
+                        <p className="text-xl mt-1 ml-1">
+                            <span className={result.classification === "Positive" ? "text-red-400 font-semibold" : "text-green-400 font-semibold"}>
+                                {result.classification}
+                            </span>
+                            <span className="text-white/70">
+                                {" "}— {result.confidence}% confidence
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                {/* MAIN GRID */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+
+                    {/* INFO PANEL */}
+                    <div className="lg:col-span-1 space-y-6">
+
+                        <div className="card">
+                            <h2 className="card-title text-2xl py-2">Sample Information</h2>
+
+                            <div className="card-list">
+                                <p><span>ID:</span> {result.sampleId}</p>
+                                <p><span>Uploaded by:</span> {result.uploadedBy}</p>
+                                <p><span>Date:</span> {result.date}</p>
+                                <p><span>AI Model:</span> {result.modelVersion}</p>
+                            </div>
+                        </div>
+
+                        <div className="card">
+                            <h2 className="card-title text-2xl py-2">Cell Statistics</h2>
+
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                <p><span>Total:</span> {result.totalCells}</p>
+                                <p><span>Normal:</span> {result.cellCounts.normal}</p>
+                                <p><span>Abnormal:</span> {result.cellCounts.abnormal}</p>
+                                <p><span>Lymphocytes:</span> {result.cellCounts.lymphocytes}</p>
+                                <p><span>Myeloblasts:</span> {result.cellCounts.myeloblasts}</p>
+                                <p><span>Neutrophils:</span> {result.cellCounts.neutrophils}</p>
+                            </div>
+                        </div>
+
+                        <div className="card">
+                            <h2 className="card-title text-2xl py-2">Previous Results</h2>
+
+                            <ul className="space-y-1 text-sm">
+                                {result.history.map((h, idx) => (
+                                    <li
+                                        key={idx}
+                                        className="flex justify-between border-b border-white/5 pb-1"
+                                    >
+                                        <span>{h.date}</span>
+                                        <span className="opacity-80">
+                                            {h.classification} ({h.confidence}%)
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
                     </div>
 
-                    {/* Classification + Confidence */}
-                    <h2 className='text-2xl font-semibold mt-4'>Classification</h2>
-                    <p className='text-xl'>
-                        {result.classification} ({result.confidence}% confidence)
-                    </p>
+                    {/* IMAGE PANELS */}
+                    <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {/* Sample Metadata */}
-                    <h2 className='text-2xl font-semibold mt-6'>Sample Information</h2>
-                    <p className='text-lg'>
-                        Sample ID: {result.sampleId} | Uploaded by: {result.uploadedBy} | Date: {result.date}
-                    </p>
-                    <p className='text-lg'>AI Model Version: {result.modelVersion}</p>
+                        <div className="image-card">
+                            <h2 className="card-title text-2xl py-2">Annotated Blood Smear</h2>
 
+                            <div className="image-frame">
+                                <Image
+                                    src={result.imageUrl}
+                                    alt="Annotated Blood Smear"
+                                    width={500}
+                                    height={500}
+                                    className="object-contain rounded-lg"
+                                />
+                            </div>
+                        </div>
 
-                    {/* Cell Statistics */}
-                    <h2 className='text-2xl font-semibold mt-6'>Cell Statistics</h2>
-                    <p>Total Cells Detected: {result.totalCells}</p>
-                    <p>Normal Cells: {result.cellCounts.normal}</p>
-                    <p>Abnormal Cells: {result.cellCounts.abnormal}</p>
-                    <p>Lymphocytes: {result.cellCounts.lymphocytes}</p>
-                    <p>Myeloblasts: {result.cellCounts.myeloblasts}</p>
-                    <p>Neutrophils: {result.cellCounts.neutrophils}</p>
+                        <div className="image-card">
+                            <h2 className="card-title text-2xl py-2">AI Explainability</h2>
 
-                    {/* History */}
-                    <h2 className='text-2xl font-semibold mt-6'>History / Previous Results</h2>
-                    <ul className='list-disc ml-6'>
-                        {result.history.map((h, index) => (
-                            <li key={index}>{h.date} — {h.classification} ({h.confidence}%)</li>
-                        ))}
-                    </ul>
+                            <div className="image-frame">
+                                <Image
+                                    src={result.shapHighlight}
+                                    alt="AI Explainability"
+                                    width={500}
+                                    height={500}
+                                    className="object-contain rounded-lg"
+                                />
+                            </div>
+                        </div>
 
-                    {/* Recommendations */}
-                    <h2 className='text-2xl font-semibold mt-6'>Recommendations</h2>
-                    <p>
-                        {result.classification === "Positive"
-                            ? "⚠️ This sample requires urgent review by a pathologist."
-                            : "This sample is normal. Routine review recommended."}
-                    </p>
-
-                    {/* Blood Smear Image */}
-                    <h2 className='text-2xl font-semibold mt-6'>Annotated Blood Smear</h2>
-                    <div className='mt-2 flex'>
-                        <Image
-                            src={result.imageUrl}
-                            alt='Annotated Blood Smear'
-                            width={300}
-                            height={300}
-                            className='rounded-lg shadow-lg object-contain'
-                        />
                     </div>
+                </div>
 
-                    {/* SHAP / Explainability */}
-                    <h2 className='text-2xl font-semibold mt-6'>AI Explainability</h2>
-                    <div className='mt-2 flex'>
-                        <Image
-                            src={result.shapHighlight}
-                            alt='SHAP Heatmap'
-                            width={300}
-                            height={300}
-                            className='rounded-lg shadow-lg object-contain'
-                        />
-                    </div>
-                </motion.div>
-            </section>
+            </motion.section>
         </div>
     )
 }
