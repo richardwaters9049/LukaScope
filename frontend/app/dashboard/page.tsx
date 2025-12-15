@@ -1,5 +1,4 @@
 "use client"
-import React from 'react'
 import Nav from '@/components/ui/nav'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -8,9 +7,7 @@ import { motion } from 'framer-motion'
 
 // Heroicons
 import {
-    ArrowUpTrayIcon,
-    BeakerIcon,
-    SparklesIcon
+    ArrowUpTrayIcon
 } from '@heroicons/react/24/outline'
 
 const page = () => {
@@ -26,12 +23,10 @@ const page = () => {
                     >
                         <Card>
                             <CardTitle className="flex items-center gap-2">
-                                <SparklesIcon className="h-5 w-5" />
                                 Hello.. 👋
                             </CardTitle>
 
                             <CardHeader className="flex items-center gap-2">
-                                <BeakerIcon className="h-5 w-5" />
                                 Welcome To LukaScope
                             </CardHeader>
 

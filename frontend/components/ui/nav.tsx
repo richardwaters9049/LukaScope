@@ -15,15 +15,15 @@ const Navigation = () => {
 
     return (
         <div className='navbar py-6 px-8 w-full flex gap-4 justify-between items-center text-xl'>
-            <div className='logo flex gap-4 items-center'>
+            <div className='logo flex gap-4 items-centern'>
                 <Link href={"/dashboard"}>
-                    <Image src={LogoImg} alt="Logo" width={80} height={80} />
+                    <Image src={LogoImg} alt="Logo" width={60} height={60} />
                 </Link>
-                <p>Welcome User Name</p>
+                <p>Welcome Admin</p>
             </div>
             <div>
                 <ul className='flex gap-8'>
-                    <Link href={"/about"}>About</Link>
+                    {/* <Link href={"/about"}>About</Link> */}
                     <Link href={"/results"}>Results</Link>
                     <Link href={"/profile"}>Profile</Link>
                     <li
