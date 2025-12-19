@@ -14,7 +14,7 @@ const page = () => {
     return (
         <div className='w-full'>
             <Nav />
-            <section className="flex w-full h-screen">
+            <section className="flex w-full h-screen tracking-wider">
                 <div className="left-col p-8 w-full flex flex-col gap-2">
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}

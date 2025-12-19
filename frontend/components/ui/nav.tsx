@@ -14,12 +14,12 @@ const Navigation = () => {
     }
 
     return (
-        <div className='navbar py-6 px-8 w-full flex gap-4 justify-between items-center text-xl'>
-            <div className='logo flex gap-4 items-centern'>
+        <div className='navbar py-6 px-8 w-full flex gap-4 justify-between items-center text-xl tracking-wider border-b-2 border-gray-500 '>
+            <div className='logo flex gap-4 items-center'>
                 <Link href={"/dashboard"}>
                     <Image src={LogoImg} alt="Logo" width={60} height={60} />
                 </Link>
-                <p>Welcome Admin</p>
+                <p>Welcome</p>
             </div>
             <div>
                 <ul className='flex gap-8'>

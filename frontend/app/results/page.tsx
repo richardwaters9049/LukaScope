@@ -1,156 +1,196 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Nav from '@/components/ui/nav'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import Navigation from "@/components/ui/nav";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useState } from "react";
 
-export default function ResultsPage() {
-    const [result] = useState({
-        sampleId: "LS-00123",
-        uploadedBy: "Admin User",
-        date: "2025-12-03 14:32",
+const PAGE_SIZE = 6;
+
+const items = [
+    {
+        id: 1,
+        image: "/images/sample_1P.png",
+        date: "2025-12-16",
+        author: "John Doe",
         classification: "Positive",
         confidence: 92,
-        totalCells: 155,
-        cellCounts: {
-            normal: 120,
-            abnormal: 35,
-            lymphocytes: 50,
-            myeloblasts: 30,
-            neutrophils: 75
-        },
-        imageUrl: "/images/sample_positive.png",
-        shapHighlight: "/images/sample_positive.png",
+    },
+    {
+        id: 2,
+        image: "/images/sample_2N.png",
+        date: "2025-12-15",
+        author: "Jane Smith",
+        classification: "Negative",
+        confidence: 89,
+    },
+    {
+        id: 3,
+        image: "/images/sample_3P.png",
+        date: "2025-12-14",
+        author: "Alice Johnson",
+        classification: "Positive",
+        confidence: 95,
+    },
+    {
+        id: 4,
+        image: "/images/sample_4N.png",
+        date: "2025-10-24",
+        author: "Bob Strike",
+        classification: "Negative",
+        confidence: 91,
+    },
+    {
+        id: 5,
+        image: "/images/sample_5P.png",
+        date: "2025-12-03",
+        author: "Greg Apple",
+        classification: "Positive",
+        confidence: 87,
+    },
+    {
+        id: 6,
+        image: "/images/sample_6N.png",
+        date: "2025-12-14",
+        author: "Suzie Q",
+        classification: "Negative",
+        confidence: 90,
+    },
+    {
+        id: 7,
+        image: "/images/sample_1P.png",
+        date: "2025-12-01",
+        author: "Extra User",
+        classification: "Positive",
+        confidence: 93,
+    },
+];
 
-        history: [
-            { date: "2025-11-20", classification: "Negative", confidence: 88 },
-            { date: "2025-11-10", classification: "Negative", confidence: 91 }
-        ],
-        modelVersion: "YOLOv8n + XGBoost v1.2"
-    })
+export default function GridLayout() {
+    const [page, setPage] = useState(1);
+
+    const totalPages = Math.ceil(items.length / PAGE_SIZE);
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const paginatedItems = items.slice(startIndex, startIndex + PAGE_SIZE);
 
     return (
-        <div className="min-h-screen">
-            <Nav />
+        <div className="main-grid">
+            <Navigation />
 
-            <motion.section
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="p-6 md:p-10 space-y-8"
+            <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
+                className="title-container flex flex-col items-center gap-8 p-6 m-8"
             >
+                {/* TITLE */}
+                <h1 className="text-5xl font-medium text-center tracking-wider">
+                    Sample Analysis Results
+                </h1>
 
-                {/* HEADER */}
-                <div className="flex items-center gap-4">
-                    {result.classification === "Positive" ? (
-                        <XCircleIcon className="w-10 h-10 text-red-500" />
-                    ) : (
-                        <CheckCircleIcon className="w-10 h-10 text-green-500" />
-                    )}
+                <p className="text-center text-2xl text-white">Review your sample analysis results below</p>
 
-                    <div className='flex flex-col justify-evenly items-start gap-1'>
-                        <h1 className="text-3xl md:text-4xl font-bold">
-                            Sample Analysis Result
-                        </h1>
+            </motion.div>
 
-                        <p className="text-xl mt-1 ml-1">
-                            <span className={result.classification === "Positive" ? "text-red-400 font-semibold" : "text-green-400 font-semibold"}>
-                                {result.classification}
-                            </span>
-                            <span className="text-white/70">
-                                {" "}— {result.confidence}% confidence
-                            </span>
-                        </p>
-                    </div>
-                </div>
+            {/* GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[15px] gap-y-[20px] p-4">
+                {paginatedItems.map((item, index) => {
+                    const isPositive = item.classification === "Positive";
 
-                {/* MAIN GRID */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                    return (
+                        <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: index * 0.08 }}
+                        >
+                            <Card className="overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl transition-transform duration-300">
+                                {/* Image */}
+                                <div className="w-full flex justify-center items-center p-2">
+                                    <Image
+                                        src={item.image}
+                                        alt={`Item ${item.id}`}
+                                        className="rounded-lg"
+                                        priority
+                                        width={200}
+                                        height={160}
+                                    />
+                                </div>
 
-                    {/* INFO PANEL */}
-                    <div className="lg:col-span-1 space-y-6">
+                                {/* Content */}
+                                <CardContent className="flex flex-col gap-2 p-4">
+                                    <div className="flex justify-between text-sm text-white">
+                                        <span>{item.date}</span>
+                                        <span>Sample ID: {item.id}</span>
+                                    </div>
 
-                        <div className="card">
-                            <h2 className="card-title text-2xl py-2">Sample Information</h2>
+                                    <div className="text-white font-medium">
+                                        {item.author}
+                                    </div>
 
-                            <div className="card-list">
-                                <p><span>ID:</span> {result.sampleId}</p>
-                                <p><span>Uploaded by:</span> {result.uploadedBy}</p>
-                                <p><span>Date:</span> {result.date}</p>
-                                <p><span>AI Model:</span> {result.modelVersion}</p>
-                            </div>
-                        </div>
-
-                        <div className="card">
-                            <h2 className="card-title text-2xl py-2">Cell Statistics</h2>
-
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <p><span>Total:</span> {result.totalCells}</p>
-                                <p><span>Normal:</span> {result.cellCounts.normal}</p>
-                                <p><span>Abnormal:</span> {result.cellCounts.abnormal}</p>
-                                <p><span>Lymphocytes:</span> {result.cellCounts.lymphocytes}</p>
-                                <p><span>Myeloblasts:</span> {result.cellCounts.myeloblasts}</p>
-                                <p><span>Neutrophils:</span> {result.cellCounts.neutrophils}</p>
-                            </div>
-                        </div>
-
-                        <div className="card">
-                            <h2 className="card-title text-2xl py-2">Previous Results</h2>
-
-                            <ul className="space-y-1 text-sm">
-                                {result.history.map((h, idx) => (
-                                    <li
-                                        key={idx}
-                                        className="flex justify-between border-b border-white/5 pb-1"
+                                    {/* Classification Preview */}
+                                    <div
+                                        className={`text-sm font-semibold ${isPositive ? "text-red-500" : "text-green-500"
+                                            }`}
                                     >
-                                        <span>{h.date}</span>
-                                        <span className="opacity-80">
-                                            {h.classification} ({h.confidence}%)
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                                        {item.classification} — {item.confidence}%
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    );
+                })}
+            </div>
 
-                    </div>
-
-                    {/* IMAGE PANELS */}
-                    <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                        <div className="image-card">
-                            <h2 className="card-title text-2xl py-2">Annotated Blood Smear</h2>
-
-                            <div className="image-frame">
-                                <Image
-                                    src={result.imageUrl}
-                                    alt="Annotated Blood Smear"
-                                    width={500}
-                                    height={500}
-                                    className="object-contain rounded-lg"
+            {/* PAGINATION */}
+            {items.length > PAGE_SIZE && (
+                <div className="flex flex-col items-center gap-2 pb-6">
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 />
-                            </div>
-                        </div>
+                            </PaginationItem>
 
-                        <div className="image-card">
-                            <h2 className="card-title text-2xl py-2">AI Explainability</h2>
+                            {[...Array(totalPages)].map((_, i) => (
+                                <PaginationItem key={i}>
+                                    <PaginationLink
+                                        isActive={page === i + 1}
+                                        onClick={() => setPage(i + 1)}
+                                    >
+                                        {i + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
 
-                            <div className="image-frame">
-                                <Image
-                                    src={result.shapHighlight}
-                                    alt="AI Explainability"
-                                    width={500}
-                                    height={500}
-                                    className="object-contain rounded-lg"
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={() =>
+                                        setPage((p) => Math.min(totalPages, p + 1))
+                                    }
                                 />
-                            </div>
-                        </div>
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
 
-                    </div>
+                    {/* Count */}
+                    <p className="text-sm text-muted-foreground mt-2">
+                        Showing {startIndex + 1}–
+                        {Math.min(startIndex + PAGE_SIZE, items.length)} of{" "}
+                        {items.length} results
+                    </p>
                 </div>
-
-            </motion.section>
+            )}
         </div>
-    )
+    );
 }
