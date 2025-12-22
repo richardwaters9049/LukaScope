@@ -21,8 +21,10 @@ export default function ResultsPage() {
             myeloblasts: 30,
             neutrophils: 75
         },
-        imageUrl: "/images/sample_positive.png",
-        shapHighlight: "/images/sample_positive.png",
+        imageUrl: "/images/sample_1P.png",
+        gradient_HMap: "/images/gradient_heatmap.png",
+        guided_BDrop: "/images/guided_backprop.png",
+        shap_HMap: "/images/shap_heatmap.png",
 
         history: [
             { date: "2025-11-20", classification: "Negative", confidence: 88 },
@@ -126,9 +128,9 @@ export default function ResultsPage() {
                                 <Image
                                     src={result.imageUrl}
                                     alt="Annotated Blood Smear"
-                                    width={500}
-                                    height={500}
-                                    className="object-contain rounded-lg"
+                                    width={300}
+                                    height={300}
+                                    className="object-center rounded-lg"
                                 />
                             </div>
                         </div>
@@ -136,12 +138,26 @@ export default function ResultsPage() {
                         <div className="image-card">
                             <h2 className="card-title text-2xl py-2">AI Explainability</h2>
 
-                            <div className="image-frame">
+                            <div className="explain-frame flex gap-4">
                                 <Image
-                                    src={result.shapHighlight}
+                                    src={result.gradient_HMap}
                                     alt="AI Explainability"
-                                    width={500}
-                                    height={500}
+                                    width={100}
+                                    height={100}
+                                    className="object-contain rounded-lg"
+                                />
+                                <Image
+                                    src={result.guided_BDrop}
+                                    alt="AI Explainability"
+                                    width={100}
+                                    height={100}
+                                    className="object-contain rounded-lg"
+                                />
+                                <Image
+                                    src={result.shap_HMap}
+                                    alt="AI Explainability"
+                                    width={100}
+                                    height={100}
                                     className="object-contain rounded-lg"
                                 />
                             </div>

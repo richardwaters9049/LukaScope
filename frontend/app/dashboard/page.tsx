@@ -1,77 +1,98 @@
 "use client"
+
 import Nav from '@/components/ui/nav'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle, CardDescription, CardHeader } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-
-// Heroicons
-import {
-    ArrowUpTrayIcon
-} from '@heroicons/react/24/outline'
+import { ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 const page = () => {
     return (
-        <div className='w-full'>
+        <div className="w-full">
             <Nav />
-            <section className="flex w-full h-screen tracking-wider">
-                <div className="left-col p-8 w-full flex flex-col gap-2">
+
+            <section className="w-full min-h-screen tracking-wider p-6 md:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    {/* ======================
+                        SUMMARY PANEL
+                    ====================== */}
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
                     >
-                        <Card>
+                        <Card className="h-full">
                             <CardTitle className="flex items-center gap-2">
                                 Hello.. 👋
                             </CardTitle>
 
                             <CardHeader className="flex items-center gap-2">
-                                Welcome To LukaScope
+                                Welcome to LukaScope
                             </CardHeader>
 
                             <CardDescription>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Repellendus beatae quas, rem sit neque hic iure ad consectetur?
-                                Eaque quasi esse velit nihil exercitationem, culpa doloribus
-                                soluta dolores explicabo quis.
+                                LukaScope is an AI-powered blood sample analysis platform
+                                designed to assist clinicians and laboratory professionals
+                                in identifying potential indicators of leukaemia.
                             </CardDescription>
+
                             <CardDescription>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Repellendus beatae quas, rem sit neque hic iure ad consectetur?
-                                Eaque quasi esse velit nihil exercitationem, culpa doloribus
-                                soluta dolores explicabo quis.
+                                Users securely upload blood smear samples, which are processed
+                                by our computer vision and machine learning models to classify
+                                samples, estimate confidence, and extract detailed cell statistics.
                             </CardDescription>
+
                             <CardDescription>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Repellendus beatae quas, rem sit neque hic iure ad consectetur?
-                                Eaque quasi esse velit nihil exercitationem, culpa doloribus
-                                soluta dolores explicabo quis.
+                                The system is built using Next.js, TypeScript, TailwindCSS,
+                                PostgreSQL, and modern AI pipelines (YOLO-based detection with
+                                gradient-boosted classifiers), ensuring speed, accuracy,
+                                and explainability.
+                            </CardDescription>
+
+                            <CardDescription>
+                                Each uploaded sample is linked to the authenticated user,
+                                allowing results, history, and AI explainability outputs
+                                to be reviewed clearly and consistently.
                             </CardDescription>
                         </Card>
                     </motion.div>
-                </div>
 
-                <div className="right-col p-8 w-full">
+                    {/* ======================
+                        UPLOAD PANEL
+                    ====================== */}
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
                     >
-                        <Card>
+                        <Card className="h-full flex flex-col gap-4">
                             <CardTitle className="flex items-center gap-2">
                                 <ArrowUpTrayIcon className="h-5 w-5" />
                                 Upload Sample
                             </CardTitle>
 
-                            <Input type="file" className='cursor-pointer' />
+                            <Input type="file" className="cursor-pointer" />
 
                             <Button className="flex items-center gap-2 transition-transform hover:scale-105 active:scale-95">
                                 <ArrowUpTrayIcon className="h-4 w-4" />
                                 Submit
                             </Button>
+
+                            <CardDescription className="text-sm opacity-80">
+                                Upload a blood smear image to begin AI analysis.
+                            </CardDescription>
+                            <CardDescription className="text-xs opacity-50">
+                                Supported formats: JPG, PNG, TIFF.
+                            </CardDescription>
+
+                            <CardDescription className="text-xs opacity-40">
+                                Maximum file size: 10MB.
+                            </CardDescription>
                         </Card>
                     </motion.div>
+
                 </div>
             </section>
         </div>
