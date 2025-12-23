@@ -19,15 +19,15 @@ const Navigation = () => {
 
     const menuItems = (
         <>
-            <Link href="/results" onClick={() => setOpen(false)}>
+            <Link href="/results" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
                 Results
             </Link>
-            <Link href="/profile" onClick={() => setOpen(false)}>
+            <Link href="/profile" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
                 Profile
             </Link>
             <button
                 onClick={handleLogout}
-                className="text-left hover:text-red-400 transition"
+                className="text-left hover:text-red-400 transition cursor-pointer"
             >
                 Log Out
             </button>
@@ -83,7 +83,7 @@ const Navigation = () => {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="md:hidden overflow-hidden border-t border-white/10"
                     >
-                        <div className="flex flex-col gap-4 px-6 py-6 text-lg bg-neutral-950">
+                        <div className="flex flex-col gap-4 px-6 py-6 text-lg bg-linear-to-b from-blue-900/20 to-black/5">
                             {menuItems}
                         </div>
                     </motion.div>
