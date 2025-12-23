@@ -21,10 +21,16 @@ export default function ResultsPage() {
             myeloblasts: 30,
             neutrophils: 75
         },
+
         imageUrl: "/images/sample_1P.png",
-        gradient_HMap: "/images/gradient_heatmap.png",
-        guided_BDrop: "/images/guided_backprop.png",
-        shap_HMap: "/images/shap_heatmap.png",
+
+        // ✅ NEW: explainability object
+        primaryExplainability: "shap",
+        explainability: {
+            gradient: "/images/gradient_heatmap.png",
+            guided_backprop: "/images/guided_backprop.png",
+            shap: "/images/shap_heatmap.png"
+        },
 
         history: [
             { date: "2025-11-20", classification: "Negative", confidence: 88 },
@@ -73,10 +79,8 @@ export default function ResultsPage() {
 
                     {/* INFO PANEL */}
                     <div className="lg:col-span-1 space-y-6">
-
                         <div className="card">
                             <h2 className="card-title text-2xl py-2">Sample Information</h2>
-
                             <div className="card-list">
                                 <p><span>ID:</span> {result.sampleId}</p>
                                 <p><span>Uploaded by:</span> {result.uploadedBy}</p>
@@ -87,7 +91,6 @@ export default function ResultsPage() {
 
                         <div className="card">
                             <h2 className="card-title text-2xl py-2">Cell Statistics</h2>
-
                             <div className="grid grid-cols-2 gap-3 text-sm">
                                 <p><span>Total:</span> {result.totalCells}</p>
                                 <p><span>Normal:</span> {result.cellCounts.normal}</p>
@@ -100,7 +103,6 @@ export default function ResultsPage() {
 
                         <div className="card">
                             <h2 className="card-title text-2xl py-2">Previous Results</h2>
-
                             <ul className="space-y-1 text-sm">
                                 {result.history.map((h, idx) => (
                                     <li
@@ -115,7 +117,6 @@ export default function ResultsPage() {
                                 ))}
                             </ul>
                         </div>
-
                     </div>
 
                     {/* IMAGE PANELS */}
@@ -123,7 +124,6 @@ export default function ResultsPage() {
 
                         <div className="image-card">
                             <h2 className="card-title text-2xl py-2">Annotated Blood Smear</h2>
-
                             <div className="image-frame">
                                 <Image
                                     src={result.imageUrl}
@@ -138,26 +138,12 @@ export default function ResultsPage() {
                         <div className="image-card">
                             <h2 className="card-title text-2xl py-2">AI Explainability</h2>
 
-                            <div className="explain-frame flex gap-4">
+                            <div className="image-frame">
                                 <Image
-                                    src={result.gradient_HMap}
+                                    src={result.explainability[result.primaryExplainability as keyof typeof result.explainability]}
                                     alt="AI Explainability"
-                                    width={100}
-                                    height={100}
-                                    className="object-contain rounded-lg"
-                                />
-                                <Image
-                                    src={result.guided_BDrop}
-                                    alt="AI Explainability"
-                                    width={100}
-                                    height={100}
-                                    className="object-contain rounded-lg"
-                                />
-                                <Image
-                                    src={result.shap_HMap}
-                                    alt="AI Explainability"
-                                    width={100}
-                                    height={100}
+                                    width={300}
+                                    height={300}
                                     className="object-contain rounded-lg"
                                 />
                             </div>
