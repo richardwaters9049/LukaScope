@@ -42,10 +42,10 @@ const Navigation = () => {
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard">
                         <Image
-                            src={LogoImg}
+                            src="/images/LumaScope Logo 4.png"
                             alt="LukaScope Logo"
-                            width={48}
-                            height={48}
+                            width={50}
+                            height={50}
                             priority
                         />
                     </Link>
