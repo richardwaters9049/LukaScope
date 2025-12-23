@@ -6,7 +6,6 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
-import LogoImg from "@/public/images/LumaScope Logo 4.png"
 
 const Navigation = () => {
     const router = useRouter()
