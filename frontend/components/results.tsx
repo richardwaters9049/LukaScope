@@ -145,6 +145,7 @@ export default function ResultsPage() {
                                     className="object-contain rounded-lg"
                                 />
                             </div>
+
                         </div>
 
                     </div>

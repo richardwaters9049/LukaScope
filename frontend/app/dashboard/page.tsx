@@ -17,7 +17,7 @@ const page = () => {
         <div className="w-full">
             <Nav />
 
-            <section className="w-full min-h-screen tracking-wider p-6 md:p-8">
+            <section className="w-full min-h-screen tracking-wider p-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* ======================
                         SUMMARY PANEL

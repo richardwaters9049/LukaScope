@@ -35,7 +35,7 @@ const Navigation = () => {
     )
 
     return (
-        <nav className="w-full border-b border-white/10 bg-neutral-950 text-white tracking-wider">
+        <nav className="w-full border-b border-white/10 bg-linear-to-b from-blue-900/20 to-black/5 text-white tracking-wider">
             <div className="flex items-center justify-between px-6 py-4">
 
                 {/* Logo */}

@@ -147,6 +147,9 @@ export default function ResultsPage() {
                                     className="object-contain rounded-lg"
                                 />
                             </div>
+                            <p className="text-sm text-gray-300 mt-2">
+                                SHAP values highlight which cellular features the AI model found most indicative of the detected classification. Darker regions indicate higher influence on the prediction, helping explain the AI&apos;s decision-making process.
+                            </p>
                         </div>
 
                     </div>
