@@ -28,7 +28,7 @@ const page = () => {
                         transition={{ duration: 0.6, ease: "easeOut" }}
                     >
                         <Card className="h-full">
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-5xl">
                                 Hello.. 👋
                             </CardTitle>
 
