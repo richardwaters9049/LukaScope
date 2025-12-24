@@ -36,6 +36,8 @@ export default function Home() {
       >
         <h1 className="text-7xl text-white">LukaScope</h1>
 
+        <p className="text-2xl text-white">An AI-powered blood sample analysis platform, designed to identify potential indicators of leukaemia.</p>
+
         <Image
           src={LogoImg}
           alt="Logo"
