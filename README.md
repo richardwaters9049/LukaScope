@@ -32,7 +32,7 @@ This repository contains both the frontend application and backend API in a Bun 
 - [Environment Variables (Backend)](#environment-variables-backend)
 - [API and Routes](#api-and-routes)
 - [UI Pages](#ui-pages)
-- [Known Gaps and Roadmap](#known-gaps-and-roadmap)
+- [Future Improvements](#future-improvements)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -263,12 +263,28 @@ Based on [`backend/.env.example`](./backend/.env.example):
 | `/results_id` | Detailed single-sample result view |
 | `/about` | About page placeholder |
 
-## Known Gaps and Roadmap
+## Future Improvements
+
+### Near-term priorities
 
 1. Implement backend domain route handlers (`auth`, `upload`, `analysis`, `results`).
-2. Add persistent data layer and migrations.
-3. Replace static frontend login flow with backend auth integration.
-4. Add tests and CI checks.
+2. Add a persistent data layer with migrations and seed workflows.
+3. Replace static frontend login with backend authentication and role-based access.
+4. Add API validation, error contracts, and standardized response schemas.
+
+### Product and UX enhancements
+
+1. Add real sample upload with progress, retry, and failure states.
+2. Add filtering/search for results (date, confidence range, classification).
+3. Add downloadable clinician-ready report views (PDF/CSV summaries).
+4. Improve the `/about` and dashboard copy with real clinical workflow guidance.
+
+### Engineering and quality improvements
+
+1. Add automated tests: unit, integration, and end-to-end coverage.
+2. Add CI pipeline for lint, build, and test gates before merge.
+3. Add API docs (OpenAPI/Swagger) and example request/response payloads.
+4. Add observability basics (structured logs, error tracking, uptime alerts).
 
 ## Contributing
 
@@ -280,4 +296,3 @@ Based on [`backend/.env.example`](./backend/.env.example):
 ## License
 
 MIT (see [`backend/package.json`](./backend/package.json)).
-
