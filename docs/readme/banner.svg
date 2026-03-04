@@ -1,0 +1,41 @@
+<svg width="1600" height="480" viewBox="0 0 1600 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1020"/>
+      <stop offset="0.45" stop-color="#123B6D"/>
+      <stop offset="1" stop-color="#0D9488"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="480" rx="24" fill="url(#bg)"/>
+
+  <circle cx="1350" cy="120" r="180" fill="#38BDF8" opacity="0.14"/>
+  <circle cx="150" cy="410" r="170" fill="#22C55E" opacity="0.12"/>
+
+  <g filter="url(#glow)">
+    <rect x="78" y="98" width="112" height="112" rx="24" fill="url(#chip)"/>
+    <path d="M114 146H154M114 166H154" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <text x="228" y="170" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="82" font-weight="700">LukaScope</text>
+  <text x="228" y="226" fill="#D1FAE5" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="500">AI-Assisted Blood Smear Analysis Platform</text>
+
+  <rect x="228" y="268" width="505" height="56" rx="14" fill="white" opacity="0.12"/>
+  <text x="256" y="305" fill="#E2E8F0" font-family="Segoe UI, Arial, sans-serif" font-size="27">Frontend + Backend + Explainable AI</text>
+
+  <rect x="748" y="268" width="392" height="56" rx="14" fill="#10B981" opacity="0.20"/>
+  <text x="776" y="305" fill="#ECFDF5" font-family="Segoe UI, Arial, sans-serif" font-size="27">Clinician-Focused Workflow</text>
+
+  <text x="228" y="376" fill="#BFDBFE" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="500">Detection • Confidence • Cell Statistics • Explainability</text>
+</svg>
