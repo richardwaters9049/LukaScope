@@ -3,10 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { config } from './config';
-import authRoutes from './routes/auth.routes';
-import uploadRoutes from './routes/upload.routes';
-import analysisRoutes from './routes/analysis.routes';
-import resultsRoutes from './routes/results.routes';
 
 // Load environment variables
 dotenv.config();
@@ -47,7 +43,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // ============================================
 // HEALTH CHECK
 // ============================================
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -55,14 +51,6 @@ app.get('/health', (req: Request, res: Response) => {
     version: '1.0.0',
   });
 });
-
-// ============================================
-// API ROUTES
-// ============================================
-app.use('/api/auth', authRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/analysis', analysisRoutes);
-app.use('/api/results', resultsRoutes);
 
 // ============================================
 // ERROR HANDLING
@@ -77,7 +65,7 @@ app.use((req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', err);
 
   res.status(500).json({

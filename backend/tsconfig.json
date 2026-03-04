@@ -21,8 +21,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "server/**/*",
-    "prisma/**/*"
+    "server/**/*"
   ],
   "exclude": [
     "node_modules",
