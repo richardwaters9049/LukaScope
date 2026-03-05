@@ -8,10 +8,15 @@
   <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope Logo" width="120" />
 </p>
 
-[![Frontend: Next.js 16](https://img.shields.io/badge/Frontend-Next.js%2016-0f172a?style=for-the-badge)](./frontend)
-[![Backend: Express](https://img.shields.io/badge/Backend-Express-1d4ed8?style=for-the-badge)](./backend)
-[![Language: TypeScript](https://img.shields.io/badge/Language-TypeScript-2563eb?style=for-the-badge)](./frontend/tsconfig.json)
-[![Workspace: Bun](https://img.shields.io/badge/Workspace-Bun%201.3-0ea5e9?style=for-the-badge)](./package.json)
+<p align="center">
+  <a href="./frontend"><img src="https://img.shields.io/badge/Frontend-Next.js%2016-111827?style=for-the-badge&labelColor=0f172a&color=1f2937" alt="Frontend: Next.js 16" /></a>
+  <a href="./backend"><img src="https://img.shields.io/badge/Backend-Express-1d4ed8?style=for-the-badge&labelColor=1e3a8a&color=3b82f6" alt="Backend: Express" /></a>
+  <a href="./frontend/tsconfig.json"><img src="https://img.shields.io/badge/Language-TypeScript-2563eb?style=for-the-badge&labelColor=1d4ed8&color=60a5fa" alt="Language: TypeScript" /></a>
+  <a href="./package.json"><img src="https://img.shields.io/badge/Workspace-Bun%201.3-0284c7?style=for-the-badge&labelColor=0369a1&color=38bdf8" alt="Workspace: Bun" /></a>
+</p>
+
+<p align="center"><strong>AI-Assisted Leukemia Detection Platform</strong></p>
+<p align="center">Earlier flagging • Faster screening support • More consistent clinical review</p>
 
 LukaScope is an AI-powered blood smear analysis platform designed to help clinicians detect potential leukemia **earlier, faster, and more consistently**.
 As the model is trained on larger and more diverse datasets, the system is expected to improve sensitivity, robustness, and confidence calibration for earlier suspicious-case flagging and clinical review.
@@ -268,19 +273,6 @@ python functions/train_model.py
 | `bun run build:frontend` | Build frontend |
 | `bun run build:backend` | Build backend |
 | `bun run lint:frontend` | Run frontend lint |
-
-### Package-local scripts
-
-| Location | Command | Description |
-|---|---|
-| `frontend` | `bun run --cwd frontend dev` | Start Next.js dev server |
-| `frontend` | `bun run --cwd frontend build` | Build frontend |
-| `frontend` | `bun run --cwd frontend start` | Run frontend production server |
-| `frontend` | `bun run --cwd frontend lint` | Run ESLint |
-| `backend` | `bun run --cwd backend dev` | Start backend with `ts-node-dev` |
-| `backend` | `bun run --cwd backend build` | Compile backend TypeScript |
-| `backend` | `bun run --cwd backend start` | Run compiled backend |
-| `backend/ai` | `python functions/train_model.py` | Run Python training scaffold |
 
 ## Testing Strategy
 
