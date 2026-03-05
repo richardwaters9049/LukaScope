@@ -202,7 +202,7 @@ flowchart LR
 ### 1) Clone and enter project
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/richardwaters9049/LukaScope.git
 cd LukaScope
 ```
 
