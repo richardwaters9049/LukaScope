@@ -13,7 +13,8 @@
 [![Language: TypeScript](https://img.shields.io/badge/Language-TypeScript-2563eb?style=for-the-badge)](./frontend/tsconfig.json)
 [![Workspace: Bun](https://img.shields.io/badge/Workspace-Bun%201.3-0ea5e9?style=for-the-badge)](./package.json)
 
-LukaScope is an AI-assisted blood smear analysis platform designed for fast, visual screening workflows.
+LukaScope is an AI-powered blood smear analysis platform designed to help clinicians detect potential leukemia **earlier, faster, and more consistently**.
+As the model is trained on larger and more diverse datasets, the system is expected to improve sensitivity, robustness, and confidence calibration for earlier suspicious-case flagging and clinical review.
 This repository contains both the frontend application and backend API in a Bun workspace monorepo.
 
 ## Table of Contents
@@ -22,6 +23,8 @@ This repository contains both the frontend application and backend API in a Bun 
 - [Project Aim](#project-aim)
 - [Expected Outcomes](#expected-outcomes)
 - [Current Status](#current-status)
+- [AI Datasets and Training Plan](#ai-datasets-and-training-plan)
+- [Training Methods and Model Strategy](#training-methods-and-model-strategy)
 - [Screenshots](#screenshots)
 - [System Architecture](#system-architecture)
 - [Tech Stack](#tech-stack)
@@ -65,19 +68,59 @@ Deliver a clinician-friendly and explainable AI experience for blood smear analy
 | Domain APIs (auth/upload/results) | Planned | Not implemented yet |
 | Persistent datastore layer | Planned | Not implemented in current cleanup state |
 
+## AI Datasets and Training Plan
+
+The following publicly available datasets are planned as the training foundation:
+
+| Dataset | Why we use it | Notes |
+|---|---|---|
+| [C-NMC 2019 (TCIA)](https://www.cancerimagingarchive.net/collection/c-nmc-2019/) | Core leukemia classification data (normal vs malignant lymphoblasts) | Used in the ISBI 2019 ALL challenge; primary dataset for ALL-focused baseline training |
+| [ALL-IDB (ALL-IDB1 / ALL-IDB2)](https://scotti.di.unimi.it/all/) | Additional ALL-focused microscopy data for generalization and robustness | Includes whole-image and cropped-cell variants suitable for classification and ROI analysis |
+| [Raabin-WBC](https://www.raabindata.com/free-data/) | Large WBC morphology diversity to improve feature robustness and pretraining | Useful for representation learning and domain adaptation before ALL-specific fine-tuning |
+
+Planned dataset workflow:
+
+1. Build a versioned dataset registry (source, split, license, preprocessing metadata).
+2. Standardize stain/illumination normalization across sources.
+3. Split by patient where possible to reduce leakage risk.
+4. Use controlled augmentation and class-balancing for stable training.
+
+Important: dataset licenses/usage terms will be reviewed per source before production use.
+
+## Training Methods and Model Strategy
+
+Planned training pipeline for leukemia detection:
+
+1. **Preprocessing**
+Normalize stain/contrast, quality-filter blurred slides, and standardize image resolution.
+2. **Cell/ROI localization**
+Use detection/segmentation to isolate diagnostically relevant regions before final classification.
+3. **Leukemia classification**
+Train deep CNN/ViT backbones with transfer learning on ALL-focused labels (normal vs suspicious/malignant).
+4. **Hybrid inference (optional)**
+Fuse deep visual embeddings with classic ML (e.g., gradient boosting) for calibrated decision boundaries.
+5. **Explainability layer**
+Generate SHAP/gradient-guided heatmaps to show why the model flagged a sample.
+6. **Continuous learning loop**
+Use clinician-reviewed corrections and newly labeled data to improve performance over time.
+
+Evaluation plan:
+
+- Prioritize **sensitivity/recall** for early suspicious-case flagging.
+- Track precision, AUROC, F1, calibration error, and false-negative rate.
+- Validate across dataset domains to measure generalization and drift resilience.
+
 ## Screenshots
 
-| Branding and Context | Sample Result |
-|---|---|
-| <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope Branding" width="180" /> | <img src="./frontend/public/images/sample_1P.png" alt="Sample Blood Smear Result" width="280" /> |
+The images below are visual assets used by the current demo UI and explainability flow.
 
-| SHAP Explainability Heatmap | Gradient Explainability Heatmap |
+| Preview | What it shows |
 |---|---|
-| <img src="./frontend/public/images/shap_heatmap.png" alt="SHAP Explainability" width="380" /> | <img src="./frontend/public/images/gradient_heatmap.png" alt="Gradient Explainability" width="380" /> |
-
-| Guided Backpropagation |
-|---|
-| <img src="./frontend/public/images/guided_backprop.png" alt="Guided Backprop Explainability" width="420" /> |
+| <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope branding logo" width="220" /> | **Branding logo** used in the login/dashboard navigation context. |
+| <img src="./frontend/public/images/sample_1P.png" alt="Example blood smear sample result" width="220" /> | **Example blood smear sample** shown in results cards and detail views. |
+| <img src="./frontend/public/images/shap_heatmap.png" alt="SHAP explainability heatmap" width="220" /> | **SHAP explainability heatmap** highlighting influential regions for model prediction. |
+| <img src="./frontend/public/images/gradient_heatmap.png" alt="Gradient explainability heatmap" width="220" /> | **Gradient-based explainability map** showing model attention across the image. |
+| <img src="./frontend/public/images/guided_backprop.png" alt="Guided backpropagation visualization" width="220" /> | **Guided backpropagation view** for feature-level interpretation support. |
 
 ## System Architecture
 
