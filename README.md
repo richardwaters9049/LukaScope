@@ -138,7 +138,7 @@ This keeps model training logic cleanly separated from the TypeScript backend AP
 
 The images below are visual assets used by the current demo UI and explainability flow.
 
-| Preview | What it shows |
+| Preview | Description |
 |---|---|
 | <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope branding logo" width="220" /> | **Branding logo** used in the login/dashboard navigation context. |
 | <img src="./frontend/public/images/sample_1P.png" alt="Example blood smear sample result" width="220" /> | **Example blood smear sample** shown in results cards and detail views. |
