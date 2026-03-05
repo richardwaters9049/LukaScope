@@ -1,7 +1,7 @@
 # LukaScope
 
 <p align="center">
-  <img src="./docs/readme/banner.svg" alt="LukaScope Project Banner" />
+  <img src="./docs/banner.svg" alt="LukaScope Project Banner" />
 </p>
 
 <p align="center">
