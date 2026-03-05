@@ -29,11 +29,11 @@ This repository contains both the frontend application and backend API in a Bun 
 - [Screenshots](#screenshots)
 - [System Architecture](#system-architecture)
 - [Tech Stack](#tech-stack)
-- [Repository Structure](#repository-structure)
 - [Setup and Installation](#setup-and-installation)
 - [Workspace Dependency Model (Bun)](#workspace-dependency-model-bun)
 - [Running the Project](#running-the-project)
 - [Available Scripts](#available-scripts)
+- [Testing Strategy](#testing-strategy)
 - [Environment Variables (Backend)](#environment-variables-backend)
 - [API and Routes](#api-and-routes)
 - [UI Pages](#ui-pages)
@@ -186,68 +186,6 @@ flowchart LR
 - SHAP + Matplotlib
 - Dedicated training workspace in `backend/ai` split into `hooks/` and `functions/`
 
-## Repository Structure
-
-```text
-LukaScope/
-├── .gitignore
-├── README.md
-├── bun.lock
-├── package.json
-├── docs/
-│   └── readme/
-│       └── banner.svg
-├── backend/
-│   ├── .env.example
-│   ├── .gitignore
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── src/
-│   │   ├── index.ts
-│   │   ├── config.ts
-│   │   ├── hooks/
-│   │   │   └── request-logger.ts
-│   │   └── functions/
-│   │       └── build-health-response.ts
-│   └── ai/
-│       ├── README.md
-│       ├── requirements.txt
-│       ├── hooks/
-│       │   └── dataset_hook.py
-│       └── functions/
-│           ├── preprocess_images.py
-│           └── train_model.py
-└── frontend/
-    ├── .gitignore
-    ├── app/
-    │   ├── layout.tsx
-    │   ├── page.tsx
-    │   ├── globals.css
-    │   ├── about/page.tsx
-    │   ├── analysis/page.tsx
-    │   ├── dashboard/page.tsx
-    │   ├── results/page.tsx
-    │   ├── results_id/page.tsx
-    │   └── api/login/route.ts
-    ├── components/
-    │   ├── overlay.tsx
-    │   ├── theme-provider.tsx
-    │   └── ui/
-    │       ├── button.tsx
-    │       ├── card.tsx
-    │       ├── input.tsx
-    │       ├── nav.tsx
-    │       └── pagination.tsx
-    ├── lib/utils.ts
-    ├── public/images/...
-    ├── components.json
-    ├── eslint.config.mjs
-    ├── next.config.ts
-    ├── package.json
-    ├── postcss.config.mjs
-    └── tsconfig.json
-```
-
 ## Setup and Installation
 
 ### Prerequisites
@@ -343,6 +281,33 @@ python functions/train_model.py
 | `backend` | `bun run --cwd backend build` | Compile backend TypeScript |
 | `backend` | `bun run --cwd backend start` | Run compiled backend |
 | `backend/ai` | `python functions/train_model.py` | Run Python training scaffold |
+
+## Testing Strategy
+
+Automated test coverage is planned as the next engineering phase. The approach is:
+
+### Frontend testing
+
+- Unit tests for UI components, utility functions, and page-level logic.
+- Integration tests for key flows: login, dashboard interactions, analysis state transitions, and results rendering.
+- End-to-end tests for critical user journeys in a browser environment.
+- Accessibility and regression checks on core pages before release.
+
+### Backend testing
+
+- Unit tests for pure functions (`functions/`) and configuration parsing.
+- Integration tests for API handlers, middleware behavior, and error contracts.
+- Contract tests for response shape and status codes across planned domain routes.
+- Smoke tests for `/health` and startup configuration validation in CI.
+
+### Test execution model
+
+1. Run fast unit tests on every commit/PR.
+2. Run integration + end-to-end suites in CI before merge.
+3. Block merges when lint/build/tests fail.
+4. Track coverage trend and enforce minimum thresholds as the suite grows.
+
+Current status: formal test scripts are not yet wired in `frontend/package.json` and `backend/package.json`; this section defines the implementation plan and quality gate model.
 
 ## Environment Variables (Backend)
 
