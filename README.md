@@ -15,8 +15,8 @@
   <a href="./package.json"><img src="https://img.shields.io/badge/Workspace-Bun%201.3-0284c7?style=for-the-badge&labelColor=0369a1&color=38bdf8" alt="Workspace: Bun" /></a>
 </p>
 
-<p align="center"><strong>AI-Assisted Leukemia Detection Platform</strong></p>
-<p align="center">Earlier flagging • Faster screening support • More consistent clinical review</p>
+<h2 align="center">AI-Assisted Leukemia Detection Platform</h2>
+<h3 align="center">Earlier flagging • Faster screening support • More consistent clinical review</h3>
 
 LukaScope is an AI-powered blood smear analysis platform designed to help clinicians detect potential leukemia **earlier, faster, and more consistently**.
 As the model is trained on larger and more diverse datasets, the system is expected to improve sensitivity, robustness, and confidence calibration for earlier suspicious-case flagging and clinical review.
