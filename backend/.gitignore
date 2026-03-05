@@ -10,6 +10,11 @@ coverage/
 dist/
 build/
 
+# Python AI
+ai/.venv/
+ai/**/__pycache__/
+ai/.pytest_cache/
+
 # Environment variables
 .env
 .env.local

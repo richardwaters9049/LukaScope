@@ -2,11 +2,11 @@
   "name": "lukascope-backend",
   "version": "1.0.0",
   "description": "Backend API for LukaScope - AI-powered blood sample analysis platform",
-  "main": "dist/server/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only server/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/server/index.js"
+    "start": "node dist/index.js"
   },
   "keywords": [
     "medical",

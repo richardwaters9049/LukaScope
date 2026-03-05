@@ -25,11 +25,13 @@ This repository contains both the frontend application and backend API in a Bun 
 - [Current Status](#current-status)
 - [AI Datasets and Training Plan](#ai-datasets-and-training-plan)
 - [Training Methods and Model Strategy](#training-methods-and-model-strategy)
+- [How Python Trains the AI](#how-python-trains-the-ai)
 - [Screenshots](#screenshots)
 - [System Architecture](#system-architecture)
 - [Tech Stack](#tech-stack)
 - [Repository Structure](#repository-structure)
 - [Setup and Installation](#setup-and-installation)
+- [Workspace Dependency Model (Bun)](#workspace-dependency-model-bun)
 - [Running the Project](#running-the-project)
 - [Available Scripts](#available-scripts)
 - [Environment Variables (Backend)](#environment-variables-backend)
@@ -44,7 +46,9 @@ This repository contains both the frontend application and backend API in a Bun 
 LukaScope currently provides:
 
 - A polished frontend workflow for login, dashboard, analysis simulation, result grid, and detailed result pages.
-- A lightweight backend API service with security middleware and health monitoring endpoint.
+- A lightweight backend API service with security middleware and health monitoring endpoint in `backend/src`.
+- A dedicated Python AI training workspace in `backend/ai` for dataset prep, preprocessing, and model training.
+- A clear folder convention where both API and AI layers use `hooks/` and `functions/` for maintainability.
 - Static sample visual outputs for explainability-oriented UX demonstration.
 
 ## Project Aim
@@ -110,6 +114,26 @@ Evaluation plan:
 - Track precision, AUROC, F1, calibration error, and false-negative rate.
 - Validate across dataset domains to measure generalization and drift resilience.
 
+## How Python Trains the AI
+
+Python is the training environment for LukaScope models, while the backend serves application APIs.
+
+Training workflow in Python (`backend/ai`):
+
+1. Load and validate datasets via `hooks/` modules.
+2. Preprocess and standardize microscopy images via `functions/`.
+3. Train leukemia detection/classification models with PyTorch/Ultralytics.
+4. Evaluate recall-first performance and calibration metrics.
+5. Export model artifacts for inference integration in the app stack.
+
+Current AI folder layout:
+
+- `backend/ai/hooks/`: dataset loading and source-specific hooks
+- `backend/ai/functions/`: preprocessing and training functions
+- `backend/ai/requirements.txt`: Python training dependencies
+
+This keeps model training logic cleanly separated from the TypeScript backend API.
+
 ## Screenshots
 
 The images below are visual assets used by the current demo UI and explainability flow.
@@ -131,6 +155,8 @@ flowchart LR
   B --> D["Backend API (Express)"]
   D --> E["Health + Middleware Layer"]
   D --> F["Domain APIs (planned)"]
+  G["Python AI Training Pipeline"] --> H["Model Artifacts"]
+  H --> D
 ```
 
 ## Tech Stack
@@ -148,6 +174,17 @@ flowchart LR
 - Node.js + Express + TypeScript
 - CORS + Helmet
 - dotenv configuration
+- Clean API runtime structure in `backend/src` (`config.ts`, `hooks/`, `functions/`, `index.ts`)
+
+### AI Training
+
+- Python 3.11+
+- PyTorch + TorchVision
+- Ultralytics (YOLO family)
+- scikit-learn
+- OpenCV + Albumentations
+- SHAP + Matplotlib
+- Dedicated training workspace in `backend/ai` split into `hooks/` and `functions/`
 
 ## Repository Structure
 
@@ -165,10 +202,21 @@ LukaScope/
 │   ├── .gitignore
 │   ├── package.json
 │   ├── tsconfig.json
-│   └── server/
-│       ├── index.ts
-│       └── config/
-│           └── index.ts
+│   ├── src/
+│   │   ├── index.ts
+│   │   ├── config.ts
+│   │   ├── hooks/
+│   │   │   └── request-logger.ts
+│   │   └── functions/
+│   │       └── build-health-response.ts
+│   └── ai/
+│       ├── README.md
+│       ├── requirements.txt
+│       ├── hooks/
+│       │   └── dataset_hook.py
+│       └── functions/
+│           ├── preprocess_images.py
+│           └── train_model.py
 └── frontend/
     ├── .gitignore
     ├── app/
@@ -206,6 +254,7 @@ LukaScope/
 
 - Node.js 20+
 - Bun 1.3+
+- Python 3.11+ (for AI training scripts)
 
 ### 1) Clone and enter project
 
@@ -220,10 +269,25 @@ cd LukaScope
 bun install
 ```
 
+### Workspace Dependency Model (Bun)
+
+- Install JavaScript/TypeScript dependencies from the repo root only (`bun install`).
+- This monorepo is configured as a Bun workspace, so frontend/backend packages resolve from workspace-managed modules.
+- Avoid running separate dependency installs inside `frontend` or `backend` unless intentionally isolating environments.
+
 ### 3) Configure backend environment
 
 ```bash
 cp backend/.env.example backend/.env
+```
+
+### 4) (Optional) Set up Python AI environment
+
+```bash
+cd backend/ai
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ## Running the Project
@@ -246,6 +310,14 @@ bun run dev:frontend
 ```
 
 Frontend URL: `http://localhost:3000`
+
+### Terminal C (Optional): Python AI training scaffold
+
+```bash
+cd backend/ai
+source .venv/bin/activate
+python functions/train_model.py
+```
 
 ## Available Scripts
 
@@ -270,6 +342,7 @@ Frontend URL: `http://localhost:3000`
 | `backend` | `bun run --cwd backend dev` | Start backend with `ts-node-dev` |
 | `backend` | `bun run --cwd backend build` | Compile backend TypeScript |
 | `backend` | `bun run --cwd backend start` | Run compiled backend |
+| `backend/ai` | `python functions/train_model.py` | Run Python training scaffold |
 
 ## Environment Variables (Backend)
 
@@ -328,6 +401,7 @@ Based on [`backend/.env.example`](./backend/.env.example):
 2. Add CI pipeline for lint, build, and test gates before merge.
 3. Add API docs (OpenAPI/Swagger) and example request/response payloads.
 4. Add observability basics (structured logs, error tracking, uptime alerts).
+5. Add experiment tracking/versioning for Python training runs (metrics, datasets, checkpoints).
 
 ## Contributing
 
