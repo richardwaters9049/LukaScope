@@ -1,43 +1,36 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Nav from '@/components/ui/nav'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import React from "react";
+import { useParams } from "next/navigation";
+import Nav from "@/components/ui/nav";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { resultsById } from "@/lib/results-data";
 
-export default function ResultsPage() {
-    const [result] = useState({
-        sampleId: "LS-00123",
-        uploadedBy: "Admin User",
-        date: "2025-12-03 14:32",
-        classification: "Positive",
-        confidence: 92,
-        totalCells: 155,
-        cellCounts: {
-            normal: 120,
-            abnormal: 35,
-            lymphocytes: 50,
-            myeloblasts: 30,
-            neutrophils: 75
-        },
+export default function ResultsDetailPage() {
+    const params = useParams<{ id: string }>();
+    const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
+    const result = id ? resultsById[id] : undefined;
 
-        imageUrl: "/images/sample_1P.png",
-
-        // ✅ NEW: explainability object
-        primaryExplainability: "shap",
-        explainability: {
-            gradient: "/images/gradient_heatmap.png",
-            guided_backprop: "/images/guided_backprop.png",
-            shap: "/images/shap_heatmap.png"
-        },
-
-        history: [
-            { date: "2025-11-20", classification: "Negative", confidence: 88 },
-            { date: "2025-11-10", classification: "Negative", confidence: 91 }
-        ],
-        modelVersion: "YOLOv8n + XGBoost v1.2"
-    })
+    if (!result) {
+        return (
+            <div className="min-h-screen">
+                <Nav />
+                <div className="flex flex-col items-center justify-center gap-4 py-16 text-white">
+                    <h1 className="text-2xl font-semibold">Result not found</h1>
+                    <p className="text-slate-300">We couldn&apos;t find a result for ID: {id || "unknown"}</p>
+                    <Link
+                        href="/results"
+                        className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                    >
+                        ← Back to Results
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen">
@@ -124,13 +117,14 @@ export default function ResultsPage() {
 
                         <div className="image-card">
                             <h2 className="card-title text-2xl py-2">Annotated Blood Smear</h2>
-                            <div className="image-frame">
+                            <div className="image-frame aspect-square w-full overflow-hidden bg-black/20 rounded-xl flex items-center justify-center">
                                 <Image
                                     src={result.imageUrl}
                                     alt="Annotated Blood Smear"
-                                    width={300}
-                                    height={300}
-                                    className="object-center rounded-lg"
+                                    width={640}
+                                    height={640}
+                                    className="object-contain h-full w-full"
+                                    priority
                                 />
                             </div>
                         </div>
@@ -138,21 +132,35 @@ export default function ResultsPage() {
                         <div className="image-card">
                             <h2 className="card-title text-2xl py-2">AI Explainability</h2>
 
-                            <div className="image-frame">
+                            <div className="image-frame aspect-square w-full overflow-hidden bg-black/20 rounded-xl flex items-center justify-center">
                                 <Image
                                     src={result.explainability[result.primaryExplainability as keyof typeof result.explainability]}
                                     alt="AI Explainability"
-                                    width={300}
-                                    height={300}
-                                    className="object-contain rounded-lg"
+                                    width={640}
+                                    height={640}
+                                    className="object-contain h-full w-full"
+                                    priority
                                 />
                             </div>
-                            {/* <p className="text-sm text-gray-300 mt-2">
-                                SHAP values highlight which cellular features the AI model found most indicative of the detected classification. Darker regions indicate higher influence on the prediction, helping explain the AI&apos;s decision-making process.
-                            </p> */}
                         </div>
 
                     </div>
+
+                    <div className="flex justify-between items-center lg:col-span-3">
+                        <Link
+                            href="/results"
+                            className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                        >
+                            ← Back to Results
+                        </Link>
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+                        >
+                            Dashboard
+                        </Link>
+                    </div>
+
                 </div>
 
             </motion.section>

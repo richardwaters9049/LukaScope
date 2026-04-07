@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -10,9 +10,23 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
 const Navigation = () => {
     const router = useRouter()
     const [open, setOpen] = useState(false)
+    const [userName, setUserName] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        const storedName = localStorage.getItem("userName")
+        const email = localStorage.getItem("userEmail")
+        const base = storedName?.trim() || email?.split("@")[0]?.split(/[._-]/)[0] || "User"
+        setUserName(base.charAt(0).toUpperCase() + base.slice(1))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const handleLogout = () => {
         document.cookie = "session=; Max-Age=0; path=/"
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("userName")
+            localStorage.removeItem("userEmail")
+        }
         router.push("/")
     }
 
@@ -49,7 +63,7 @@ const Navigation = () => {
                         />
                     </Link>
                     <span className="hidden sm:block text-lg font-medium">
-                        Welcome
+                        Welcome{userName ? `, ${userName}` : ""}
                     </span>
                 </div>
 

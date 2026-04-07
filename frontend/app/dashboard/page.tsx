@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Nav from "@/components/ui/nav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,8 +13,35 @@ import {
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import AnalysisOverlay from "@/components/overlay";
+import Image from "next/image";
 
-const page = () => {
+const DashboardPage = () => {
+    const router = useRouter();
+    const [analysing, setAnalysing] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+    const [error, setError] = useState("");
+
+    const isAllowedFile = (f: File) => {
+        if (["image/jpeg", "image/png", "image/tiff"].includes(f.type)) return true;
+        return /\.(jpe?g|png|tiff?)$/i.test(f.name);
+    };
+
+    const handleUpload = () => {
+        if (!file) {
+            setError("Please choose a sample file before submitting.");
+            return;
+        }
+
+        if (!isAllowedFile(file)) {
+            setError("Unsupported format. Use JPG, PNG, or TIFF.");
+            return;
+        }
+
+        setError("");
+        setAnalysing(true);
+    };
+
     return (
         <div className="w-full">
             <Nav />
@@ -78,14 +107,34 @@ const page = () => {
                                 Upload Sample
                             </CardTitle>
 
-                            <Input type="file" className="cursor-pointer" />
+                            <Input
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.tif,.tiff"
+                                className="cursor-pointer"
+                                disabled={analysing}
+                                onChange={(e) => {
+                                    const selected = e.target.files?.[0] ?? null;
+                                    setFile(selected);
+                                    setError("");
+                                }}
+                            />
 
                             <div className="submit-btn flex justify-center my-5">
-                                <Button className="flex items-center gap-2 transition-transform hover:scale-102 active:scale-95 w-1/2">
+                                <Button
+                                    className="flex items-center gap-2 transition-transform hover:scale-102 active:scale-95 w-1/2"
+                                    onClick={handleUpload}
+                                    disabled={analysing}
+                                >
                                     <ArrowUpTrayIcon className="h-4 w-4" />
-                                    Submit
+                                    {analysing ? "Analysing..." : "Submit"}
                                 </Button>
                             </div>
+
+                            {error && (
+                                <CardDescription className="text-sm text-red-400">
+                                    {error}
+                                </CardDescription>
+                            )}
 
                             <CardDescription className="text-sm opacity-80">
                                 Upload a blood smear image to begin AI analysis.
@@ -97,12 +146,43 @@ const page = () => {
                             <CardDescription className="text-xs opacity-40">
                                 Maximum file size: 10MB.
                             </CardDescription>
+
+                            <div className="rounded-lg border border-white/10 bg-slate-900/60 p-3 text-sm text-slate-200 space-y-2">
+                                <div className="font-semibold text-white">Upload tips</div>
+                                <ul className="list-disc pl-4 space-y-1">
+                                    <li>Use the clearest smear image available (avoid blur and glare).</li>
+                                    <li>Single file per upload is supported today.</li>
+                                    <li>Demo images live in <code>/public/images</code> if you need a sample.</li>
+                                </ul>
+                            </div>
+
+                            <div className="rounded-lg border border-white/10 bg-slate-900/60 p-4 text-sm text-slate-100 space-y-3">
+                                <div className="font-semibold text-white text-base">Sample preview</div>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative h-24 w-24 overflow-hidden rounded-md border border-white/10 bg-black/30">
+                                        <Image
+                                            src="/images/sample_1P.png"
+                                            alt="Sample smear preview"
+                                            fill
+                                            sizes="96px"
+                                            className="object-contain"
+                                            priority
+                                        />
+                                    </div>
+                                    <div className="space-y-2 text-slate-100">
+                                        <p className="text-base font-medium">Need a quick test image?</p>
+                                        <p className="text-sm text-slate-200">Use this bundled demo smear to try the analysis flow instantly.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </Card>
                     </motion.div>
                 </div>
             </section>
+
+            <AnalysisOverlay open={analysing} onComplete={() => router.push("/results/1")} />
         </div>
     );
 };
 
-export default page;
+export default DashboardPage;

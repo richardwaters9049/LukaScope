@@ -19,6 +19,12 @@ export default function Home() {
 
     // Simple demo login check
     if (email === "admin@lukascope.com" && password === "password123") {
+      const nameFromEmail = email.split("@")[0]?.split(/[._-]/)[0] ?? "User"
+      const capitalised = nameFromEmail ? nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1) : "User"
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userName", capitalised)
+        localStorage.setItem("userEmail", email)
+      }
       document.cookie = "session=true; path=/"
       router.push("/dashboard")
     } else {

@@ -70,82 +70,87 @@ export default function AnalysisOverlay({ open, onComplete }: Props) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 bg-linear-to-b from-blue-900/20 to-black/5 text-white flex items-center justify-center"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md text-white px-4 py-10"
                 >
-                    <div className="w-full max-w-5xl px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="w-full max-w-5xl bg-slate-900/90 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-6 md:p-8 items-center">
 
-                        {/* IMAGE */}
-                        <div className="relative rounded-xl overflow-hidden border border-white/10">
-                            <Image
-                                src="/images/sample_2N.png"
-                                alt="Sample"
-                                width={500}
-                                height={500}
-                                className="object-contain"
-                            />
+                            {/* IMAGE */}
+                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40">
+                                <Image
+                                    src="/images/sample_2N.png"
+                                    alt="Sample"
+                                    fill
+                                    sizes="(min-width: 768px) 50vw, 100vw"
+                                    className="object-contain"
+                                    priority
+                                />
 
-                            {stage === 'detect' && (
-                                <FlashBox x="22%" y="35%" />
-                            )}
+                                {stage === 'detect' && (
+                                    <FlashBox x="22%" y="35%" />
+                                )}
 
-                            {stage === 'explain' && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 0.6 }}
-                                    className="absolute inset-0"
-                                >
-                                    <Image
-                                        src="/images/shap_heatmap.png"
-                                        alt="Heatmap"
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </motion.div>
-                            )}
-                        </div>
+                                {stage === 'explain' && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 0.8 }}
+                                        className="absolute inset-0"
+                                    >
+                                        <Image
+                                            src="/images/shap_heatmap.png"
+                                            alt="Heatmap"
+                                            fill
+                                            sizes="(min-width: 768px) 50vw, 100vw"
+                                            className="object-contain"
+                                            priority
+                                        />
+                                    </motion.div>
+                                )}
+                            </div>
 
-                        {/* STATUS */}
-                        <div className="flex flex-col justify-center gap-6 tracking-wider">
-                            <h1 className="text-3xl font-bold">
+                            {/* STATUS */}
+                            <div className="flex flex-col justify-center gap-6 tracking-wider">
+                                <h1 className="text-3xl font-bold">
+                                    <AnimatePresence mode="wait">
+                                        <motion.span
+                                            key={stage}
+                                            initial={{ opacity: 0, y: 6 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -6 }}
+                                            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                                            className="inline-block"
+                                        >
+                                            {copy[stage].title}
+                                        </motion.span>
+                                    </AnimatePresence>
+                                </h1>
+
+                                <p className="text-xl">
+                                    Confidence:&nbsp;
+                                    <span className="text-green-400 font-semibold">
+                                        {displayConfidence}%
+                                    </span>
+                                </p>
+
                                 <AnimatePresence mode="wait">
-                                    <motion.span
-                                        key={stage}
+                                    <motion.p
+                                        key={`${stage}-body`}
                                         initial={{ opacity: 0, y: 6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -6 }}
                                         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                                        className="inline-block"
+                                        className="text-sm opacity-85 leading-relaxed max-w-md"
                                     >
-                                        {copy[stage].title}
-                                    </motion.span>
+                                        {copy[stage].body}
+                                    </motion.p>
                                 </AnimatePresence>
-                            </h1>
 
-                            <p className="text-xl">
-                                Confidence:&nbsp;
-                                <span className="text-green-400 font-semibold">
-                                    {displayConfidence}%
-                                </span>
-                            </p>
-
-                            <AnimatePresence mode="wait">
-                                <motion.p
-                                    key={`${stage}-body`}
-                                    initial={{ opacity: 0, y: 6 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -6 }}
-                                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                                    className="text-sm opacity-85 leading-relaxed max-w-md"
-                                >
-                                    {copy[stage].body}
-                                </motion.p>
-                            </AnimatePresence>
-
-                            <div className="text-sm opacity-80 space-y-1">
-                                <p>• Cell segmentation</p>
-                                <p>• Feature extraction</p>
-                                <p>• Model inference</p>
-                                <p>• Explainability mapping</p>
+                                <div className="text-sm opacity-80 space-y-1">
+                                    <p>• Cell segmentation</p>
+                                    <p>• Feature extraction</p>
+                                    <p>• Model inference</p>
+                                    <p>• Explainability mapping</p>
+                                </div>
                             </div>
                         </div>
                     </div>
