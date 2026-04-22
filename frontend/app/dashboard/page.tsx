@@ -9,7 +9,6 @@ import {
     Card,
     CardTitle,
     CardDescription,
-    CardHeader,
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
@@ -58,12 +57,8 @@ const DashboardPage = () => {
                     >
                         <Card className="h-full">
                             <CardTitle className="flex items-center gap-2 text-5xl">
-                                Hello.. 👋
-                            </CardTitle>
-
-                            <CardHeader className="flex items-center gap-2">
                                 Welcome to LukaScope
-                            </CardHeader>
+                            </CardTitle>
 
                             <CardDescription>
                                 LukaScope is an AI-powered blood sample analysis platform
