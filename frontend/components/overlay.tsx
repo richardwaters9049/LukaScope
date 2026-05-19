@@ -44,23 +44,32 @@ export default function AnalysisOverlay({ open, onComplete }: Props) {
     useEffect(() => {
         if (!open) return
 
+        let cancelled = false
+
         const run = async () => {
             setStage('scan')
             setConfidence(72)
 
             await wait(2200)
+            if (cancelled) return
             setConfidence(89)
             setStage('detect')
 
             await wait(2200)
+            if (cancelled) return
             setConfidence(92)
             setStage('explain')
 
             await wait(2600)
+            if (cancelled) return
             onComplete()
         }
 
         run()
+
+        return () => {
+            cancelled = true
+        }
     }, [open, onComplete])
 
     return (

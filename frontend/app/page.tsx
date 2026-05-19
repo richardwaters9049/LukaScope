@@ -6,26 +6,29 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import LogoImg from "@/public/images/LumaScope Logo 4.png"
+import { DEMO_CREDENTIALS, getDisplayNameFromEmail } from "@/lib/auth"
 
 export default function Home() {
   const router = useRouter()
 
-  const [email, setEmail] = useState("admin@lukascope.com")
-  const [password, setPassword] = useState("password123")
+  const [email, setEmail] = useState<string>(DEMO_CREDENTIALS.email)
+  const [password, setPassword] = useState<string>(DEMO_CREDENTIALS.password)
   const [error, setError] = useState("")
 
   const handleLogin = async () => {
     setError("")
 
-    // Simple demo login check
-    if (email === "admin@lukascope.com" && password === "password123") {
-      const nameFromEmail = email.split("@")[0]?.split(/[._-]/)[0] ?? "User"
-      const capitalised = nameFromEmail ? nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1) : "User"
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+
+    if (response.ok) {
       if (typeof window !== "undefined") {
-        localStorage.setItem("userName", capitalised)
+        localStorage.setItem("userName", getDisplayNameFromEmail(email))
         localStorage.setItem("userEmail", email)
       }
-      document.cookie = "session=true; path=/"
       router.push("/dashboard")
     } else {
       setError("Invalid email or password")

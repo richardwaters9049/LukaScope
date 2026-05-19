@@ -1,28 +1,32 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import { useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
+import { getDisplayNameFromEmail } from "@/lib/auth"
+
+const subscribeToStorage = (onStoreChange: () => void) => {
+    window.addEventListener("storage", onStoreChange)
+    return () => window.removeEventListener("storage", onStoreChange)
+}
+
+const getStoredUserName = () => {
+    const storedName = localStorage.getItem("userName")?.trim()
+    const email = localStorage.getItem("userEmail")
+
+    return storedName || getDisplayNameFromEmail(email ?? "")
+}
 
 const Navigation = () => {
     const router = useRouter()
     const [open, setOpen] = useState(false)
-    const [userName, setUserName] = useState<string | null>(null)
+    const userName = useSyncExternalStore(subscribeToStorage, getStoredUserName, () => null)
 
-    useEffect(() => {
-        if (typeof window === "undefined") return
-        const storedName = localStorage.getItem("userName")
-        const email = localStorage.getItem("userEmail")
-        const base = storedName?.trim() || email?.split("@")[0]?.split(/[._-]/)[0] || "User"
-        setUserName(base.charAt(0).toUpperCase() + base.slice(1))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const handleLogout = () => {
-        document.cookie = "session=; Max-Age=0; path=/"
+    const handleLogout = async () => {
+        await fetch("/api/login", { method: "DELETE" })
         if (typeof window !== "undefined") {
             localStorage.removeItem("userName")
             localStorage.removeItem("userEmail")
