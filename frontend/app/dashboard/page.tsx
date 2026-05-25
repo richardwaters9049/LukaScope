@@ -98,7 +98,6 @@ const DashboardPage = () => {
                     >
                         <Card className="h-auto flex flex-col gap-4">
                             <CardTitle className="flex items-center gap-2">
-                                <ArrowUpTrayIcon className="h-5 w-5" />
                                 Upload Sample
                             </CardTitle>
 

@@ -16,7 +16,7 @@ COPY backend/package.json ./backend/
 
 # Install bun and dependencies
 RUN npm install -g bun@1.3.1
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Builder stage
 FROM base AS builder
@@ -71,14 +71,15 @@ RUN npm install -g bun@1.3.1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 backend
 
-# Copy built files and dependencies
+# Copy built files and package files
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/backend/package.json ./backend/
-COPY --from=builder /app/backend/node_modules ./backend/node_modules
 COPY --from=builder /app/backend/src ./backend/src
+COPY --from=builder /app/backend/.env.example ./backend/.env
 
-# Copy environment file template
-COPY backend/.env.example ./backend/.env
+# Install production dependencies in backend directory
+WORKDIR /app/backend
+RUN bun install --production
 
 USER backend
 
@@ -88,4 +89,4 @@ ENV PORT=3001
 ENV NODE_ENV=production
 
 # Start the backend server
-CMD ["bun", "run", "--cwd", "backend", "start"]
+CMD ["bun", "run", "start"]
