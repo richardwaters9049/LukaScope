@@ -49,9 +49,16 @@ export default function GridLayout() {
                     </Link>
                 </div>
 
+<<<<<<< HEAD
                 <p className="text-center text-2xl text-white">
                     Review your sample analysis results below
                 </p>
+=======
+                <p className="text-center text-2xl text-white">Review your sample analysis results below</p>
+
+
+
+>>>>>>> 6fada1f (Profile page animation added, back to dashboard button added to results page)
             </motion.div>
 
             {/* GRID */}
