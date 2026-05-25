@@ -1,17 +1,17 @@
 # Docker Compose configuration for running tests
-# Usage: docker-compose -f docker-compose.test.yml up --build
+# Usage: docker-compose -f docker/docker-compose.test.yml up --build
 
 services:
   frontend-test:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
       target: test
     environment:
       - NODE_ENV=test
       - NEXT_TELEMETRY_DISABLED=1
     volumes:
-      - ./frontend:/app
+      - ../frontend:/app
       - /app/node_modules
       - /app/.next
     networks:
@@ -19,15 +19,15 @@ services:
 
   backend-test:
     build:
-      context: .
+      context: ..
       dockerfile: backend/Dockerfile
       target: test
     environment:
       - NODE_ENV=test
     volumes:
-      - ./backend:/app/backend
-      - ./package.json:/app/package.json
-      - ./bun.lock:/app/bun.lock
+      - ../backend:/app/backend
+      - ../package.json:/app/package.json
+      - ../bun.lock:/app/bun.lock
       - /app/node_modules
       - /app/backend/node_modules
       - /app/backend/dist
@@ -36,12 +36,12 @@ services:
 
   ai-test:
     build:
-      context: ./backend/ai
+      context: ../backend/ai
       dockerfile: Dockerfile
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - ./backend/ai:/app
+      - ../backend/ai:/app
       - /app/.venv
     networks:
       - lukascope-test-network

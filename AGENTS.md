@@ -22,6 +22,7 @@ LukaScope/
 │       ├── hooks/    # Dataset loading and source-specific hooks
 │       ├── functions/ # Preprocessing and training functions
 │       └── requirements.txt
+├── docker/            # Docker Compose files and Docker documentation
 ├── docs/             # Documentation and assets
 └── package.json      # Root workspace configuration
 ```
@@ -98,20 +99,20 @@ python functions/train_model.py
 #### Docker Deployment
 ```bash
 # Build and start all services
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml up -d
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 
 # Stop services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 
 # Rebuild specific service
-docker-compose up -d --build frontend
-docker-compose up -d --build backend
+docker-compose -f docker/docker-compose.yml up -d --build frontend
+docker-compose -f docker/docker-compose.yml up -d --build backend
 
 # Run AI training service (on-demand)
-docker-compose --profile ai up ai-training
+docker-compose -f docker/docker-compose.yml --profile ai up ai-training
 ```
 
 ### Build Commands
@@ -187,12 +188,12 @@ The project includes Docker-based testing with dedicated test stages:
 
 ```bash
 # Run all tests in Docker
-docker-compose -f docker-compose.test.yml up --build
+docker-compose -f docker/docker-compose.test.yml up --build
 
 # Run specific service tests
-docker-compose -f docker-compose.test.yml up frontend-test
-docker-compose -f docker-compose.test.yml up backend-test
-docker-compose -f docker-compose.test.yml --profile ai up ai-test
+docker-compose -f docker/docker-compose.test.yml up frontend-test
+docker-compose -f docker/docker-compose.test.yml up backend-test
+docker-compose -f docker/docker-compose.test.yml --profile ai up ai-test
 ```
 
 ### Test Coverage Reports
@@ -329,7 +330,7 @@ The project includes a multi-container Docker setup for containerized deployment
 
 ### Docker Files
 
-- `docker-compose.yml` - Orchestrates frontend and backend services
+- `docker/docker-compose.yml` - Orchestrates frontend and backend services
 - `frontend/Dockerfile` - Multi-stage build for Next.js production
 - `backend/Dockerfile` - Build for Express.js API
 - `backend/ai/Dockerfile` - Python environment for AI training
@@ -363,27 +364,27 @@ The project includes a multi-container Docker setup for containerized deployment
 **Production Deployment**:
 ```bash
 # Build and start all services
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 
 # Check service status
-docker-compose ps
+docker-compose -f docker/docker-compose.yml ps
 
 # View logs
-docker-compose logs -f frontend
-docker-compose logs -f backend
+docker-compose -f docker/docker-compose.yml logs -f frontend
+docker-compose -f docker/docker-compose.yml logs -f backend
 ```
 
 **Development with Docker (Hot Reload)**:
 ```bash
 # Use development configuration with hot reload
-docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f frontend
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f frontend
+docker-compose -f docker/docker-compose.dev.yml logs -f backend
 
 # Stop development services
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 **Key Development Features**:
@@ -396,15 +397,15 @@ docker-compose -f docker-compose.dev.yml down
 **AI Training**:
 ```bash
 # Run AI training on-demand
-docker-compose --profile ai up ai-training
+docker-compose -f docker/docker-compose.yml --profile ai up ai-training
 
 # With custom command
-docker-compose --profile ai run ai-training python functions/evaluate_model.py
+docker-compose -f docker/docker-compose.yml --profile ai run ai-training python functions/evaluate_model.py
 ```
 
 ### Docker Environment Variables
 
-Set these in `docker-compose.yml` or environment files:
+Set these in `docker/docker-compose.yml` or environment files:
 
 **Frontend**:
 - `NODE_ENV` - Environment (production/development)
@@ -419,7 +420,7 @@ Set these in `docker-compose.yml` or environment files:
 
 For persistent data (database, uploads, models):
 ```yaml
-# Example additions to docker-compose.yml
+# Example additions to docker/docker-compose.yml
 volumes:
   - postgres_data:/var/lib/postgresql/data
   - uploads:/app/uploads
@@ -435,28 +436,28 @@ volumes:
 
 **Rebuild after dependency changes**:
 ```bash
-docker-compose down
-docker-compose build --no-cache frontend backend
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml down
+docker-compose -f docker/docker-compose.yml build --no-cache frontend backend
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
 **Check container logs**:
 ```bash
-docker-compose logs frontend
-docker-compose logs backend
-docker-compose logs --tail=50 frontend
+docker-compose -f docker/docker-compose.yml logs frontend
+docker-compose -f docker/docker-compose.yml logs backend
+docker-compose -f docker/docker-compose.yml logs --tail=50 frontend
 ```
 
 **Enter container for debugging**:
 ```bash
-docker-compose exec frontend sh
-docker-compose exec backend sh
-docker-compose --profile ai exec ai-training bash
+docker-compose -f docker/docker-compose.yml exec frontend sh
+docker-compose -f docker/docker-compose.yml exec backend sh
+docker-compose -f docker/docker-compose.yml --profile ai exec ai-training bash
 ```
 
 **Clean up Docker resources**:
 ```bash
-docker-compose down -v    # Remove volumes
+docker-compose -f docker/docker-compose.yml down -v    # Remove volumes
 docker system prune -a   # Remove unused images
 ```
 
