@@ -35,10 +35,19 @@ export default function GridLayout() {
                 transition={{ duration: 0.3, delay: 0.05 }}
                 className="title-container flex flex-col items-center gap-8 p-6 m-8"
             >
-                {/* TITLE */}
-                <h1 className="text-5xl font-medium text-center tracking-wider">
-                    Sample Analysis Results
-                </h1>
+                <div className="relative flex items-center justify-center w-full">
+                    {/* TITLE */}
+                    <h1 className="text-5xl font-medium text-center tracking-wider">
+                        Sample Analysis Results
+                    </h1>
+
+                    <Link
+                        href="/dashboard"
+                        className="absolute right-0 inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                    >
+                        ← Back to Dashboard
+                    </Link>
+                </div>
 
                 <p className="text-center text-2xl text-white">Review your sample analysis results below</p>
 
