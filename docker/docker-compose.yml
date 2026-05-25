@@ -1,7 +1,7 @@
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -16,7 +16,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: backend/Dockerfile
     ports:
       - "3001:3001"
@@ -31,11 +31,11 @@ services:
   # AI Training service (commented out by default - run on-demand)
   # ai-training:
   #   build:
-  #     context: ./backend/ai
+  #     context: ../backend/ai
   #     dockerfile: Dockerfile
   #   volumes:
-  #     - ./backend/ai:/app
-  #     - ./data:/app/data
+  #     - ../backend/ai:/app
+  #     - ../data:/app/data
   #   environment:
   #     - PYTHONUNBUFFERED=1
   #   networks:

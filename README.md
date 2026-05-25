@@ -238,7 +238,7 @@ pip install -r requirements.txt
 cp backend/.env.example backend/.env
 
 # Build and start services
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 ```
 
 No local installation of Node.js, Bun, or Python required when using Docker.
@@ -299,13 +299,13 @@ python functions/train_model.py
 
 ```bash
 # Build and start all services
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 
 # Stop services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 ```
 
 **Service URLs**:
@@ -314,7 +314,7 @@ docker-compose down
 
 **AI Training (on-demand)**:
 ```bash
-docker-compose --profile ai up ai-training
+docker-compose -f docker/docker-compose.yml --profile ai up ai-training
 ```
 
 ### Option C: Docker Development with Hot Reload
@@ -323,14 +323,14 @@ For development with live code reloading:
 
 ```bash
 # Use development configuration with hot reload
-docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f frontend
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f frontend
+docker-compose -f docker/docker-compose.dev.yml logs -f backend
 
 # Stop development services
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 **Key Development Features**:
@@ -340,7 +340,7 @@ docker-compose -f docker-compose.dev.yml down
 - Changes on host filesystem are reflected immediately
 - No data loss when containers are restarted
 
-**Important**: Use `docker-compose.dev.yml` for development, not `docker-compose.yml` (which is production-only without hot reload).
+**Important**: Use `docker/docker-compose.dev.yml` for development, not `docker/docker-compose.yml` (which is production-only without hot reload).
 
 ## Available Scripts
 
@@ -402,12 +402,12 @@ bun run test:coverage
 **Docker Testing**:
 ```bash
 # Run all tests in Docker
-docker-compose -f docker-compose.test.yml up --build
+docker-compose -f docker/docker-compose.test.yml up --build
 
 # Run specific service tests
-docker-compose -f docker-compose.test.yml up frontend-test
-docker-compose -f docker-compose.test.yml up backend-test
-docker-compose -f docker-compose.test.yml --profile ai up ai-test
+docker-compose -f docker/docker-compose.test.yml up frontend-test
+docker-compose -f docker/docker-compose.test.yml up backend-test
+docker-compose -f docker/docker-compose.test.yml --profile ai up ai-test
 ```
 
 ### Test execution model
@@ -435,9 +435,9 @@ The project includes comprehensive Docker containerization for production deploy
 
 ### Docker Files
 
-- `docker-compose.yml` - Main orchestration for production services
-- `docker-compose.dev.yml` - Development orchestration with hot reload
-- `docker-compose.test.yml` - Test orchestration for all services
+- `docker/docker-compose.yml` - Main orchestration for production services
+- `docker/docker-compose.dev.yml` - Development orchestration with hot reload
+- `docker/docker-compose.test.yml` - Test orchestration for all services
 - `frontend/Dockerfile` - Multi-stage build for Next.js (includes dev stage)
 - `backend/Dockerfile` - Build for Express.js with dev and test stages
 - `backend/ai/Dockerfile` - Python environment with test stage
@@ -448,48 +448,48 @@ The project includes comprehensive Docker containerization for production deploy
 **Production Deployment**:
 ```bash
 # Build and start all services
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 
 # Stop services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 
 # Rebuild specific service
-docker-compose up -d --build frontend
+docker-compose -f docker/docker-compose.yml up -d --build frontend
 ```
 
 **Development with Hot Reload**:
 ```bash
 # Use development configuration with hot reload
-docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f frontend
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f frontend
+docker-compose -f docker/docker-compose.dev.yml logs -f backend
 
 # Stop development services
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 **Testing with Docker**:
 ```bash
 # Run all tests
-docker-compose -f docker-compose.test.yml up --build
+docker-compose -f docker/docker-compose.test.yml up --build
 
 # Run specific service tests
-docker-compose -f docker-compose.test.yml up frontend-test
-docker-compose -f docker-compose.test.yml up backend-test
+docker-compose -f docker/docker-compose.test.yml up frontend-test
+docker-compose -f docker/docker-compose.test.yml up backend-test
 ```
 
 **AI Training**:
 ```bash
 # Run AI training on-demand
-docker-compose --profile ai up ai-training
+docker-compose -f docker/docker-compose.yml --profile ai up ai-training
 
 # Run custom AI command
-docker-compose --profile ai run ai-training python functions/evaluate_model.py
+docker-compose -f docker/docker-compose.yml --profile ai run ai-training python functions/evaluate_model.py
 ```
 
 ### Docker Benefits
@@ -502,7 +502,7 @@ docker-compose --profile ai run ai-training python functions/evaluate_model.py
 
 ### Detailed Documentation
 
-For comprehensive Docker documentation, see [`DOCKER.md`](./DOCKER.md).
+For comprehensive Docker documentation, see [`DOCKER.md`](./docker/DOCKER.md).
 
 ## Environment Variables (Backend)
 
@@ -572,7 +572,7 @@ Based on [`backend/.env.example`](./backend/.env.example):
 
 ## Additional Documentation
 
-- [`DOCKER.md`](./DOCKER.md) - Comprehensive Docker deployment and testing guide
+- [`DOCKER.md`](./docker/DOCKER.md) - Comprehensive Docker deployment and testing guide
 - [`AGENTS.md`](./AGENTS.md) - Project guidelines for AI agents and developers
 - [`backend/ai/README.md`](./backend/ai/README.md) - AI training workflow documentation
 

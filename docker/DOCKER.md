@@ -2,11 +2,13 @@
 
 This guide covers Docker containerization for the LukaScope project, including frontend, backend, and AI training services.
 
+> **Note**: All commands below should be run from the **repository root** directory.
+
 ## Quick Start
 
 ```bash
 # Build and start all services
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 
 # Access the application
 # Frontend: http://localhost:3000
@@ -58,16 +60,16 @@ The project includes a comprehensive Docker testing setup that runs tests in iso
 
 ```bash
 # Run all tests
-docker-compose -f docker-compose.test.yml up --build
+docker-compose -f docker/docker-compose.test.yml up --build
 
 # Run frontend tests only
-docker-compose -f docker-compose.test.yml up frontend-test
+docker-compose -f docker/docker-compose.test.yml up frontend-test
 
 # Run backend tests only
-docker-compose -f docker-compose.test.yml up backend-test
+docker-compose -f docker/docker-compose.test.yml up backend-test
 
 # Run AI tests (with profile)
-docker-compose -f docker-compose.test.yml --profile ai up ai-test
+docker-compose -f docker/docker-compose.test.yml --profile ai up ai-test
 ```
 
 ### Test Stages in Dockerfiles
@@ -130,8 +132,8 @@ For CI/CD pipelines, use the test Dockerfiles:
 # Example CI/CD workflow
 - name: Run Tests
   run: |
-    docker-compose -f docker-compose.test.yml up --build
-    docker-compose -f docker-compose.test.yml down
+    docker-compose -f docker/docker-compose.test.yml up --build
+    docker-compose -f docker/docker-compose.test.yml down
 ```
 
 ## Usage
@@ -140,54 +142,54 @@ For CI/CD pipelines, use the test Dockerfiles:
 
 ```bash
 # Start all services
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml up -d
 
 # Stop all services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 
 # Rebuild specific service
-docker-compose up -d --build frontend
-docker-compose up -d --build backend
+docker-compose -f docker/docker-compose.yml up -d --build frontend
+docker-compose -f docker/docker-compose.yml up -d --build backend
 
 # Check service status
-docker-compose ps
+docker-compose -f docker/docker-compose.yml ps
 ```
 
 ### Development Workflow
 
 ```bash
 # Start in development mode
-docker-compose up -d --build
+docker-compose -f docker/docker-compose.yml up -d --build
 
 # Enter container for debugging
-docker-compose exec frontend sh
-docker-compose exec backend sh
+docker-compose -f docker/docker-compose.yml exec frontend sh
+docker-compose -f docker/docker-compose.yml exec backend sh
 
 # Run commands inside container
-docker-compose exec frontend bun run dev
-docker-compose exec backend bun run dev
+docker-compose -f docker/docker-compose.yml exec frontend bun run dev
+docker-compose -f docker/docker-compose.yml exec backend bun run dev
 ```
 
 ### AI Training
 
 ```bash
 # Run AI training service
-docker-compose --profile ai up ai-training
+docker-compose -f docker/docker-compose.yml --profile ai up ai-training
 
 # Run specific AI command
-docker-compose --profile ai run ai-training python functions/train_model.py
+docker-compose -f docker/docker-compose.yml --profile ai run ai-training python functions/train_model.py
 
 # Run model evaluation
-docker-compose --profile ai run ai-training python functions/evaluate_model.py
+docker-compose -f docker/docker-compose.yml --profile ai run ai-training python functions/evaluate_model.py
 ```
 
 ## Environment Configuration
 
 ### Frontend Environment
-Set in `docker-compose.yml`:
+Set in `docker/docker-compose.yml`:
 ```yaml
 environment:
   - NODE_ENV=production
@@ -195,7 +197,7 @@ environment:
 ```
 
 ### Backend Environment
-Set in `docker-compose.yml`:
+Set in `docker/docker-compose.yml`:
 ```yaml
 environment:
   - NODE_ENV=production
@@ -213,7 +215,7 @@ PORT=3001
 
 ## Docker Files
 
-- `docker-compose.yml` - Main orchestration file
+- `docker/docker-compose.yml` - Main orchestration file
 - `frontend/Dockerfile` - Frontend container build
 - `backend/Dockerfile` - Backend container build
 - `backend/ai/Dockerfile` - AI training container build
@@ -235,16 +237,16 @@ The Docker setup uses several optimization strategies:
 
 ```bash
 # Clean rebuild
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml down
+docker-compose -f docker/docker-compose.yml build --no-cache
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
 ### Port Conflicts
 
 If ports 3000 or 3001 are already in use:
 ```yaml
-# Edit docker-compose.yml
+# Edit docker/docker-compose.yml
 services:
   frontend:
     ports:
@@ -258,21 +260,21 @@ services:
 
 ```bash
 # Fix file permissions
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 sudo chown -R $USER:$USER .
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
 ### Container Access
 
 ```bash
 # Check container logs
-docker-compose logs frontend
-docker-compose logs backend
+docker-compose -f docker/docker-compose.yml logs frontend
+docker-compose -f docker/docker-compose.yml logs backend
 
 # Enter container shell
-docker-compose exec frontend sh
-docker-compose exec backend sh
+docker-compose -f docker/docker-compose.yml exec frontend sh
+docker-compose -f docker/docker-compose.yml exec backend sh
 
 # Inspect container
 docker inspect lukascope-frontend-1
@@ -302,15 +304,15 @@ docker stats
 
 ```bash
 # Scale frontend (requires load balancer)
-docker-compose up -d --scale frontend=3
+docker-compose -f docker/docker-compose.yml up -d --scale frontend=3
 
 # Scale backend
-docker-compose up -d --scale backend=2
+docker-compose -f docker/docker-compose.yml up -d --scale backend=2
 ```
 
 ### Health Checks
 
-Add health checks to `docker-compose.yml`:
+Add health checks to `docker/docker-compose.yml`:
 ```yaml
 healthcheck:
   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
@@ -325,10 +327,10 @@ healthcheck:
 
 ```bash
 # Stop and remove containers
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 
 # Remove volumes (WARNING: deletes data)
-docker-compose down -v
+docker-compose -f docker/docker-compose.yml down -v
 
 # Clean unused Docker resources
 docker system prune -a
@@ -341,9 +343,9 @@ docker system prune -a
 git pull
 
 # Rebuild and restart
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml down
+docker-compose -f docker/docker-compose.yml build --no-cache
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
 ## Additional Resources

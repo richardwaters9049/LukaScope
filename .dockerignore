@@ -32,13 +32,16 @@ Thumbs.db
 
 # Docker
 Dockerfile
-docker-compose.yml
+docker/
 .dockerignore
 
 # Documentation
 README.md
 AGENTS.md
 docs
+DOCKER.md
+DOCKER_DEV_GUIDE.md
+DOCKER_DEV_SETUP.md
 
 # Testing
 coverage

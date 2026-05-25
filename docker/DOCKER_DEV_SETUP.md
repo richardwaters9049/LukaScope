@@ -2,6 +2,8 @@
 
 This document explains the Docker development configuration that enables hot reload for both frontend and backend services.
 
+> **Note**: All commands below should be run from the **repository root** directory.
+
 ## Problem Solved
 
 The original Docker setup (`docker-compose.yml`) was configured for production only:
@@ -12,7 +14,7 @@ The original Docker setup (`docker-compose.yml`) was configured for production o
 
 ## Solution
 
-Created `docker-compose.dev.yml` with development-specific configuration:
+Created `docker/docker-compose.dev.yml` with development-specific configuration:
 - Volume mounts sync local code changes to containers
 - Services run in development mode (`NODE_ENV=development`)
 - Frontend uses Next.js dev server with hot reload
@@ -25,14 +27,14 @@ Created `docker-compose.dev.yml` with development-specific configuration:
 
 ```bash
 # Start services with hot reload
-docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f frontend
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f frontend
+docker-compose -f docker/docker-compose.dev.yml logs -f backend
 
 # Stop development services
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 ### Service URLs
@@ -51,7 +53,7 @@ docker-compose -f docker-compose.dev.yml down
 
 ## Configuration Files
 
-### docker-compose.dev.yml
+### docker/docker-compose.dev.yml
 
 Development-specific Docker Compose configuration with:
 - Frontend service using `dev` target from Dockerfile
@@ -90,9 +92,9 @@ Development-specific Docker Compose configuration with:
 
 ### Use Correct Configuration
 
-- **Development**: Use `docker-compose.dev.yml` for development with hot reload
-- **Production**: Use `docker-compose.yml` for production builds
-- **Testing**: Use `docker-compose.test.yml` for running tests
+- **Development**: Use `docker/docker-compose.dev.yml` for development with hot reload
+- **Production**: Use `docker/docker-compose.yml` for production builds
+- **Testing**: Use `docker/docker-compose.test.yml` for running tests
 
 ### Button Persistence Issue
 
@@ -118,21 +120,21 @@ The backend `tsconfig.json` was updated to be compatible with ts-node-dev by:
 
 ### Hot Reload Not Working
 
-1. Verify you're using `docker-compose.dev.yml`, not `docker-compose.yml`
+1. Verify you're using `docker/docker-compose.dev.yml`, not `docker/docker-compose.yml`
 2. Check volume mounts are working: `docker exec lukascope-frontend-1 ls /app`
-3. Restart services: `docker-compose -f docker-compose.dev.yml restart`
-4. Rebuild if needed: `docker-compose -f docker-compose.dev.yml up -d --build`
+3. Restart services: `docker-compose -f docker/docker-compose.dev.yml restart`
+4. Rebuild if needed: `docker-compose -f docker/docker-compose.dev.yml up -d --build`
 
 ### TypeScript Compilation Errors
 
 1. Ensure `tsconfig.json` is mounted in backend volume
 2. Check TypeScript configuration is compatible with ts-node-dev
-3. Restart backend service: `docker-compose -f docker-compose.dev.yml restart backend`
+3. Restart backend service: `docker-compose -f docker/docker-compose.dev.yml restart backend`
 
 ### Changes Not Reflecting
 
 1. Make sure you're editing files on host filesystem, not inside containers
-2. Check volume mounts are correct in `docker-compose.dev.yml`
+2. Check volume mounts are correct in `docker/docker-compose.dev.yml`
 3. Verify file permissions on host filesystem
 4. Restart the affected service
 
@@ -148,8 +150,8 @@ The backend `tsconfig.json` was updated to be compatible with ts-node-dev by:
 
 If you were previously using the production setup for development:
 
-1. Stop production containers: `docker-compose down`
-2. Start development containers: `docker-compose -f docker-compose.dev.yml up -d --build`
+1. Stop production containers: `docker-compose -f docker/docker-compose.yml down`
+2. Start development containers: `docker-compose -f docker/docker-compose.dev.yml up -d --build`
 3. Edit files on your host filesystem (not inside containers)
 4. Enjoy hot reload and persistent changes
 
