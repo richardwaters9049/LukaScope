@@ -35,22 +35,23 @@ export default function GridLayout() {
                 transition={{ duration: 0.3, delay: 0.05 }}
                 className="title-container flex flex-col items-center gap-8 p-6 m-8"
             >
-                <div className="relative flex items-center justify-center w-full">
+                <div className="title-container flex justify-around gap-10 w-full">
                     {/* TITLE */}
-                    <h1 className="text-5xl font-medium text-center tracking-wider">
+                    <h1 className="text-5xl font-medium text-center tracking-wider justify-center">
                         Sample Analysis Results
                     </h1>
 
                     <Link
                         href="/dashboard"
-                        className="absolute right-0 inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                        className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
                     >
                         ← Back to Dashboard
                     </Link>
                 </div>
 
-                <p className="text-center text-2xl text-white">Review your sample analysis results below</p>
-
+                <p className="text-center text-2xl text-white">
+                    Review your sample analysis results below
+                </p>
             </motion.div>
 
             {/* GRID */}
@@ -133,9 +134,7 @@ export default function GridLayout() {
 
                             <PaginationItem>
                                 <PaginationNext
-                                    onClick={() =>
-                                        setPage((p) => Math.min(totalPages, p + 1))
-                                    }
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 />
                             </PaginationItem>
                         </PaginationContent>
