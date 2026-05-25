@@ -85,7 +85,7 @@ export default function AnalysisOverlay({ open, onComplete }: Props) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-6 md:p-8 items-center">
 
                             {/* IMAGE */}
-                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40">
+                            <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-white/10 bg-black/40">
                                 <Image
                                     src="/images/sample_2N.png"
                                     alt="Sample"
