@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+    depends_on:
+      - backend
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - FRONTEND_URL=http://frontend:3000
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+  # AI Training service (commented out by default - run on-demand)
+  # ai-training:
+  #   build:
+  #     context: ./backend/ai
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./backend/ai:/app
+  #     - ./data:/app/data
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #   networks:
+  #     - lukascope-network
+  #   profiles:
+  #     - ai  # Use: docker-compose --profile ai up ai-training
+
+networks:
+  lukascope-network:
+    driver: bridge

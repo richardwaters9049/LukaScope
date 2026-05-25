@@ -39,11 +39,13 @@ This repository contains both the frontend application and backend API in a Bun 
 - [Running the Project](#running-the-project)
 - [Available Scripts](#available-scripts)
 - [Testing Strategy](#testing-strategy)
+- [Docker Deployment](#docker-deployment)
 - [Environment Variables (Backend)](#environment-variables-backend)
 - [API and Routes](#api-and-routes)
 - [UI Pages](#ui-pages)
 - [Future Improvements](#future-improvements)
 - [Contributing](#contributing)
+- [Additional Documentation](#additional-documentation)
 - [License](#license)
 
 ## Project Overview
@@ -195,9 +197,14 @@ flowchart LR
 
 ### Prerequisites
 
+**Local Development**:
 - Node.js 20+
 - Bun 1.3+
 - Python 3.11+ (for AI training scripts)
+
+**Docker Deployment**:
+- Docker 20.10+
+- Docker Compose 2.0+
 
 ### 1) Clone and enter project
 
@@ -206,11 +213,35 @@ git clone https://github.com/richardwaters9049/LukaScope.git
 cd LukaScope
 ```
 
-### 2) Install workspace dependencies
+### 2) Choose your installation method
+
+#### Option A: Local Development
 
 ```bash
+# Install workspace dependencies
 bun install
+
+# Configure backend environment
+cp backend/.env.example backend/.env
+
+# (Optional) Set up Python AI environment
+cd backend/ai
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
+
+#### Option B: Docker Deployment
+
+```bash
+# Configure backend environment
+cp backend/.env.example backend/.env
+
+# Build and start services
+docker-compose up -d --build
+```
+
+No local installation of Node.js, Bun, or Python required when using Docker.
 
 ### Workspace Dependency Model (Bun)
 
@@ -235,18 +266,20 @@ pip install -r requirements.txt
 
 ## Running the Project
 
+### Option A: Local Development
+
 Run each service in its own terminal.
 
-### Terminal A: Backend API
+**Terminal A: Backend API**
 
 ```bash
 bun run dev:backend
 ```
 
-Backend URL: `http://localhost:3001`  
+Backend URL: `http://localhost:3001`
 Health check: `GET http://localhost:3001/health`
 
-### Terminal B: Frontend App
+**Terminal B: Frontend App**
 
 ```bash
 bun run dev:frontend
@@ -254,12 +287,34 @@ bun run dev:frontend
 
 Frontend URL: `http://localhost:3000`
 
-### Terminal C (Optional): Python AI training scaffold
+**Terminal C (Optional): Python AI training scaffold**
 
 ```bash
 cd backend/ai
 source .venv/bin/activate
 python functions/train_model.py
+```
+
+### Option B: Docker Deployment
+
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+**Service URLs**:
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
+
+**AI Training (on-demand)**:
+```bash
+docker-compose --profile ai up ai-training
 ```
 
 ## Available Scripts
@@ -273,33 +328,142 @@ python functions/train_model.py
 | `bun run build:frontend` | Build frontend |
 | `bun run build:backend` | Build backend |
 | `bun run lint:frontend` | Run frontend lint |
+| `bun run test` | Run all frontend and backend tests |
+| `bun run test:frontend` | Run frontend tests |
+| `bun run test:backend` | Run backend tests |
+| `bun run test:ai` | Run AI training tests |
+| `bun run test:coverage` | Run all tests with coverage reports |
 
 ## Testing Strategy
 
-Automated test coverage is planned as the next engineering phase. The approach is:
+Testing infrastructure has been implemented with frameworks and Docker integration. Test suites are in early development with example tests provided.
 
-### Frontend testing
+### Test Frameworks
 
-- Unit tests for UI components, utility functions, and page-level logic.
-- Integration tests for key flows: login, dashboard interactions, analysis state transitions, and results rendering.
-- End-to-end tests for critical user journeys in a browser environment.
-- Accessibility and regression checks on core pages before release.
+**Frontend Testing (Jest + React Testing Library)**:
+- Unit tests for UI components, utility functions, and page-level logic
+- Integration tests for key flows: login, dashboard interactions, analysis state transitions, and results rendering
+- End-to-end tests for critical user journeys in a browser environment
+- Accessibility and regression checks on core pages before release
 
-### Backend testing
+**Backend Testing (Jest + ts-jest)**:
+- Unit tests for pure functions (`functions/`) and configuration parsing
+- Integration tests for API handlers, middleware behavior, and error contracts
+- Contract tests for response shape and status codes across planned domain routes
+- Smoke tests for `/health` and startup configuration validation in CI
 
-- Unit tests for pure functions (`functions/`) and configuration parsing.
-- Integration tests for API handlers, middleware behavior, and error contracts.
-- Contract tests for response shape and status codes across planned domain routes.
-- Smoke tests for `/health` and startup configuration validation in CI.
+**AI Training Testing (pytest + pytest-cov)**:
+- Unit tests for data preprocessing functions
+- Integration tests for model training pipeline
+- Validation tests for model outputs and metrics
+- Data integrity tests for dataset loading
+
+### Running Tests
+
+**Local Testing**:
+```bash
+# Run all tests
+bun run test
+
+# Run specific service tests
+bun run test:frontend
+bun run test:backend
+bun run test:ai
+
+# Run with coverage
+bun run test:coverage
+```
+
+**Docker Testing**:
+```bash
+# Run all tests in Docker
+docker-compose -f docker-compose.test.yml up --build
+
+# Run specific service tests
+docker-compose -f docker-compose.test.yml up frontend-test
+docker-compose -f docker-compose.test.yml up backend-test
+docker-compose -f docker-compose.test.yml --profile ai up ai-test
+```
 
 ### Test execution model
 
-1. Run fast unit tests on every commit/PR.
-2. Run integration + end-to-end suites in CI before merge.
-3. Block merges when lint/build/tests fail.
-4. Track coverage trend and enforce minimum thresholds as the suite grows.
+1. Run fast unit tests on every commit/PR
+2. Run integration + end-to-end suites in CI before merge
+3. Block merges when lint/build/tests fail
+4. Track coverage trend and enforce minimum thresholds as the suite grows
 
-Current status: formal test scripts are not yet wired in `frontend/package.json` and `backend/package.json`; this section defines the implementation plan and quality gate model.
+**Coverage Reports**:
+- Frontend: `frontend/coverage/`
+- Backend: `backend/coverage/`
+- AI: `backend/ai/htmlcov/`
+
+## Docker Deployment
+
+The project includes comprehensive Docker containerization for production deployment and isolated testing environments.
+
+### Docker Architecture
+
+- **Frontend Container**: Next.js 16 with Bun runtime (multi-stage build)
+- **Backend Container**: Express.js with Node.js runtime (TypeScript compilation)
+- **AI Training Container** (optional): Python 3.11 with PyTorch and ML dependencies
+- **Test Containers**: Dedicated test stages for each service
+
+### Docker Files
+
+- `docker-compose.yml` - Main orchestration for production services
+- `docker-compose.test.yml` - Test orchestration for all services
+- `frontend/Dockerfile` - Multi-stage build for Next.js
+- `backend/Dockerfile` - Build for Express.js with test stage
+- `backend/ai/Dockerfile` - Python environment with test stage
+- `.dockerignore` files - Build context optimization
+
+### Docker Commands
+
+**Production Deployment**:
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild specific service
+docker-compose up -d --build frontend
+```
+
+**Testing with Docker**:
+```bash
+# Run all tests
+docker-compose -f docker-compose.test.yml up --build
+
+# Run specific service tests
+docker-compose -f docker-compose.test.yml up frontend-test
+docker-compose -f docker-compose.test.yml up backend-test
+```
+
+**AI Training**:
+```bash
+# Run AI training on-demand
+docker-compose --profile ai up ai-training
+
+# Run custom AI command
+docker-compose --profile ai run ai-training python functions/evaluate_model.py
+```
+
+### Docker Benefits
+
+- **Consistency**: Same environment across development, testing, and production
+- **Isolation**: Each service runs in isolated containers
+- **Portability**: Deploy anywhere Docker is available
+- **Scalability**: Easy horizontal scaling with Docker Swarm or Kubernetes
+- **Testing**: Dedicated test stages for CI/CD integration
+
+### Detailed Documentation
+
+For comprehensive Docker documentation, see [`DOCKER.md`](./DOCKER.md).
 
 ## Environment Variables (Backend)
 
@@ -354,7 +518,7 @@ Based on [`backend/.env.example`](./backend/.env.example):
 
 ### Engineering and quality improvements
 
-1. Add automated tests: unit, integration, and end-to-end coverage.
+1. ✅ Add automated tests: unit, integration, and end-to-end coverage (frameworks implemented)
 2. Add CI pipeline for lint, build, and test gates before merge.
 3. Add API docs (OpenAPI/Swagger) and example request/response payloads.
 4. Add observability basics (structured logs, error tracking, uptime alerts).
@@ -364,8 +528,14 @@ Based on [`backend/.env.example`](./backend/.env.example):
 
 1. Create a feature branch.
 2. Keep changes scoped by layer (`frontend` or `backend`).
-3. Run lint/build before opening a PR.
+3. Run lint/build/tests before opening a PR.
 4. Update this README when behavior or setup changes.
+
+## Additional Documentation
+
+- [`DOCKER.md`](./DOCKER.md) - Comprehensive Docker deployment and testing guide
+- [`AGENTS.md`](./AGENTS.md) - Project guidelines for AI agents and developers
+- [`backend/ai/README.md`](./backend/ai/README.md) - AI training workflow documentation
 
 ## License
 

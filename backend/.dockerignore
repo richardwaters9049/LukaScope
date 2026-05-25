@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+dist
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# AI training (built separately)
+ai/__pycache__
+ai/*.pyc
+ai/.venv
+ai/.pytest_cache
+
+# Testing
+coverage
+
+# Misc
+*.log
+.cache

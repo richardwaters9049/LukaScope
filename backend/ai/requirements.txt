@@ -8,3 +8,5 @@ torchvision
 ultralytics
 shap
 matplotlib
+pytest
+pytest-cov

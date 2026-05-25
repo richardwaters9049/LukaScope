@@ -58,6 +58,7 @@ LukaScope/
 - Node.js 20+
 - Bun 1.3+
 - Python 3.11+ (for AI training)
+- Docker (optional, for containerized deployment)
 
 ### Installation
 ```bash
@@ -75,6 +76,8 @@ pip install -r requirements.txt
 ```
 
 ### Running the Project
+
+#### Local Development
 Run each service in its own terminal:
 
 ```bash
@@ -90,6 +93,25 @@ bun run dev:frontend
 cd backend/ai
 source .venv/bin/activate
 python functions/train_model.py
+```
+
+#### Docker Deployment
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild specific service
+docker-compose up -d --build frontend
+docker-compose up -d --build backend
+
+# Run AI training service (on-demand)
+docker-compose --profile ai up ai-training
 ```
 
 ### Build Commands
@@ -128,9 +150,59 @@ bun run lint:frontend   # Run frontend lint
 ## Testing Strategy
 
 ### Current Status
-Formal test scripts are not yet wired in `frontend/package.json` and `backend/package.json`. This is a planned implementation phase.
+Testing infrastructure has been implemented with test frameworks and Docker integration. Formal test suites are in early development with example tests provided.
 
-### Planned Testing Approach
+### Test Frameworks
+
+**Frontend Testing**:
+- **Framework**: Jest + React Testing Library
+- **Configuration**: `frontend/jest.config.js`, `frontend/jest.setup.js`
+- **Test Location**: `frontend/__tests__/`
+- **Scripts**:
+  - `bun run test` - Run tests
+  - `bun run test:watch` - Watch mode
+  - `bun run test:coverage` - With coverage report
+
+**Backend Testing**:
+- **Framework**: Jest + ts-jest
+- **Configuration**: `backend/jest.config.js`
+- **Test Location**: `backend/__tests__/`
+- **Scripts**:
+  - `bun run test` - Run tests
+  - `bun run test:watch` - Watch mode
+  - `bun run test:coverage` - With coverage report
+
+**AI Training Testing**:
+- **Framework**: pytest + pytest-cov
+- **Configuration**: `backend/ai/pytest.ini`
+- **Test Location**: `backend/ai/tests/`
+- **Commands**:
+  - `pytest` - Run tests
+  - `pytest -v` - Verbose output
+  - `pytest --cov` - With coverage
+
+### Docker Testing
+
+The project includes Docker-based testing with dedicated test stages:
+
+```bash
+# Run all tests in Docker
+docker-compose -f docker-compose.test.yml up --build
+
+# Run specific service tests
+docker-compose -f docker-compose.test.yml up frontend-test
+docker-compose -f docker-compose.test.yml up backend-test
+docker-compose -f docker-compose.test.yml --profile ai up ai-test
+```
+
+### Test Coverage Reports
+
+Coverage reports are generated in:
+- Frontend: `frontend/coverage/`
+- Backend: `backend/coverage/`
+- AI: `backend/ai/htmlcov/`
+
+### Test Development Guidelines
 
 **Frontend Testing**:
 - Unit tests for UI components, utility functions, and page-level logic
@@ -143,6 +215,12 @@ Formal test scripts are not yet wired in `frontend/package.json` and `backend/pa
 - Integration tests for API handlers, middleware behavior, and error contracts
 - Contract tests for response shape and status codes
 - Smoke tests for `/health` and startup configuration
+
+**AI Training Testing**:
+- Unit tests for data preprocessing functions
+- Integration tests for model training pipeline
+- Validation tests for model outputs and metrics
+- Data integrity tests for dataset loading
 
 **Test Execution**:
 1. Run fast unit tests on every commit/PR
@@ -238,6 +316,137 @@ Before considering a task complete:
 - **Security**: Never commit secrets or keys to the repository
 - **Medical Context**: This is a medical application – prioritize accuracy, reliability, and clear error handling
 - **Performance**: AI model training prioritizes sensitivity/recall for early suspicious-case flagging
+
+## Docker Setup
+
+### Docker Architecture
+
+The project includes a multi-container Docker setup for containerized deployment:
+
+- **Frontend Container**: Next.js 16 application with Bun runtime
+- **Backend Container**: Express.js API with Node.js runtime
+- **AI Training Container** (optional): Python environment with PyTorch for model training
+
+### Docker Files
+
+- `docker-compose.yml` - Orchestrates frontend and backend services
+- `frontend/Dockerfile` - Multi-stage build for Next.js production
+- `backend/Dockerfile` - Build for Express.js API
+- `backend/ai/Dockerfile` - Python environment for AI training
+- `.dockerignore` files - Optimize build context for each service
+
+### Docker Configuration Details
+
+**Frontend Container**:
+- Base image: `oven/bun:1.3.1-alpine`
+- Multi-stage build (deps → builder → runner)
+- Standalone Next.js output for optimized production
+- Non-root user execution (nextjs)
+- Port: 3000
+
+**Backend Container**:
+- Base image: `node:20-alpine`
+- Builds TypeScript to JavaScript
+- Bun workspace support
+- Non-root user execution (backend)
+- Port: 3001
+
+**AI Training Container**:
+- Base image: `python:3.11-slim`
+- Includes PyTorch, OpenCV, and ML dependencies
+- System libraries for image processing
+- Non-root user execution (aiuser)
+- Runs on-demand via Docker Compose profile
+
+### Docker Workflow
+
+**Production Deployment**:
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f frontend
+docker-compose logs -f backend
+```
+
+**Development with Docker**:
+```bash
+# Override environment for development
+docker-compose up -d --build
+docker-compose exec frontend sh
+docker-compose exec backend sh
+```
+
+**AI Training**:
+```bash
+# Run AI training on-demand
+docker-compose --profile ai up ai-training
+
+# With custom command
+docker-compose --profile ai run ai-training python functions/evaluate_model.py
+```
+
+### Docker Environment Variables
+
+Set these in `docker-compose.yml` or environment files:
+
+**Frontend**:
+- `NODE_ENV` - Environment (production/development)
+- `NEXT_PUBLIC_API_URL` - Backend API URL
+
+**Backend**:
+- `NODE_ENV` - Environment (production/development)
+- `PORT` - Server port (default: 3001)
+- `FRONTEND_URL` - CORS allowed origin
+
+### Docker Volume Management
+
+For persistent data (database, uploads, models):
+```yaml
+# Example additions to docker-compose.yml
+volumes:
+  - postgres_data:/var/lib/postgresql/data
+  - uploads:/app/uploads
+  - models:/backend/models
+
+volumes:
+  postgres_data:
+  uploads:
+  models:
+```
+
+### Docker Troubleshooting
+
+**Rebuild after dependency changes**:
+```bash
+docker-compose down
+docker-compose build --no-cache frontend backend
+docker-compose up -d
+```
+
+**Check container logs**:
+```bash
+docker-compose logs frontend
+docker-compose logs backend
+docker-compose logs --tail=50 frontend
+```
+
+**Enter container for debugging**:
+```bash
+docker-compose exec frontend sh
+docker-compose exec backend sh
+docker-compose --profile ai exec ai-training bash
+```
+
+**Clean up Docker resources**:
+```bash
+docker-compose down -v    # Remove volumes
+docker system prune -a   # Remove unused images
+```
 
 ## Resources
 
