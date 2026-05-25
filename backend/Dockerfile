@@ -18,6 +18,34 @@ COPY backend/package.json ./backend/
 RUN npm install -g bun@1.3.1
 RUN bun install
 
+# Development stage
+FROM base AS dev
+WORKDIR /app
+
+# Install bun globally
+RUN npm install -g bun@1.3.1
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
+COPY --from=deps /app/backend/node_modules ./backend/node_modules
+
+# Copy package files for potential reinstall
+COPY package.json bun.lock* ./
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
+
+# Set development environment
+ENV NODE_ENV=development
+
+EXPOSE 3001
+
+# Set working directory for development
+WORKDIR /app/backend
+
+# Start development server with hot reload
+CMD ["bun", "run", "dev"]
+
 # Builder stage
 FROM base AS builder
 WORKDIR /app

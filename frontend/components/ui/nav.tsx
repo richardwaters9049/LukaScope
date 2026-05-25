@@ -36,6 +36,10 @@ const Navigation = () => {
 
     const menuItems = (
         <>
+            <Link href="/about" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
+                About
+            </Link>
+
             <Link href="/results" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
                 Results
             </Link>

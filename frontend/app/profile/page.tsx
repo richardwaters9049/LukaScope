@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function ProfilePage() {
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+        <div className="min-h-screen w-full bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
             <Nav />
 
             <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-10 md:px-8">

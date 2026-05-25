@@ -317,6 +317,31 @@ docker-compose down
 docker-compose --profile ai up ai-training
 ```
 
+### Option C: Docker Development with Hot Reload
+
+For development with live code reloading:
+
+```bash
+# Use development configuration with hot reload
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f frontend
+docker-compose -f docker-compose.dev.yml logs -f backend
+
+# Stop development services
+docker-compose -f docker-compose.dev.yml down
+```
+
+**Key Development Features**:
+- Volume mounts sync local code changes to containers
+- Frontend uses Next.js dev server with hot reload
+- Backend uses ts-node-dev with auto-restart  
+- Changes on host filesystem are reflected immediately
+- No data loss when containers are restarted
+
+**Important**: Use `docker-compose.dev.yml` for development, not `docker-compose.yml` (which is production-only without hot reload).
+
 ## Available Scripts
 
 ### Root workspace (`/`)
@@ -411,9 +436,10 @@ The project includes comprehensive Docker containerization for production deploy
 ### Docker Files
 
 - `docker-compose.yml` - Main orchestration for production services
+- `docker-compose.dev.yml` - Development orchestration with hot reload
 - `docker-compose.test.yml` - Test orchestration for all services
-- `frontend/Dockerfile` - Multi-stage build for Next.js
-- `backend/Dockerfile` - Build for Express.js with test stage
+- `frontend/Dockerfile` - Multi-stage build for Next.js (includes dev stage)
+- `backend/Dockerfile` - Build for Express.js with dev and test stages
 - `backend/ai/Dockerfile` - Python environment with test stage
 - `.dockerignore` files - Build context optimization
 
@@ -432,6 +458,19 @@ docker-compose down
 
 # Rebuild specific service
 docker-compose up -d --build frontend
+```
+
+**Development with Hot Reload**:
+```bash
+# Use development configuration with hot reload
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f frontend
+docker-compose -f docker-compose.dev.yml logs -f backend
+
+# Stop development services
+docker-compose -f docker-compose.dev.yml down
 ```
 
 **Testing with Docker**:

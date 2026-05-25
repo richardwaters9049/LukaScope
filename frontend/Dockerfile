@@ -11,6 +11,25 @@ COPY package.json bun.lock* ./
 # Install dependencies
 RUN bun install
 
+# Development stage
+FROM base AS dev
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json bun.lock* ./
+
+# Install any missing dependencies
+RUN bun install
+
+# Set development environment
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+EXPOSE 3000
+
+# Start development server with hot reload
+CMD ["bun", "run", "dev"]
+
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app

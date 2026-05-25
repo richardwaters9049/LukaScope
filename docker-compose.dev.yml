@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev  # Use dev stage for development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Prevent overwriting container node_modules
+      - /app/.next  # Prevent overwriting build artifacts
+    command: ["bun", "run", "dev"]
+    depends_on:
+      - backend
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: dev  # Use dev stage for development
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - FRONTEND_URL=http://frontend:3000
+    volumes:
+      - ./backend:/app/backend
+      - /app/backend/node_modules  # Prevent overwriting container node_modules
+      - /app/backend/dist  # Prevent overwriting build artifacts
+    command: ["bun", "run", "dev"]
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+networks:
+  lukascope-network:
+    driver: bridge

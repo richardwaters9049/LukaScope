@@ -373,13 +373,25 @@ docker-compose logs -f frontend
 docker-compose logs -f backend
 ```
 
-**Development with Docker**:
+**Development with Docker (Hot Reload)**:
 ```bash
-# Override environment for development
-docker-compose up -d --build
-docker-compose exec frontend sh
-docker-compose exec backend sh
+# Use development configuration with hot reload
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f frontend
+docker-compose -f docker-compose.dev.yml logs -f backend
+
+# Stop development services
+docker-compose -f docker-compose.dev.yml down
 ```
+
+**Key Development Features**:
+- Volume mounts sync local code changes to containers
+- Frontend uses Next.js dev server with hot reload
+- Backend uses ts-node-dev with auto-restart
+- Changes on host filesystem are reflected immediately
+- No data loss when containers are restarted
 
 **AI Training**:
 ```bash
