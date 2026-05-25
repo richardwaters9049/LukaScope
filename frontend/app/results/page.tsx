@@ -49,10 +49,9 @@ export default function GridLayout() {
                     </Link>
                 </div>
 
-                <p className="text-center text-2xl text-white">Review your sample analysis results below</p>
-
-
-
+                <p className="text-center text-2xl text-white">
+                    Review your sample analysis results below
+                </p>
             </motion.div>
 
             {/* GRID */}
@@ -135,9 +134,7 @@ export default function GridLayout() {
 
                             <PaginationItem>
                                 <PaginationNext
-                                    onClick={() =>
-                                        setPage((p) => Math.min(totalPages, p + 1))
-                                    }
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 />
                             </PaginationItem>
                         </PaginationContent>
