@@ -283,13 +283,17 @@ export default function AboutPage() {
                             How LukaScope Detects Leukaemia
                         </h2>
                     </div>
-
-                    <p className="text-sm leading-7 text-slate-300 max-w-3xl">
-                        Malignant lymphoblasts exhibit distinct features&mdash;enlarged nuclei,
-                        high nucleus-to-cytoplasm ratio, irregular chromatin. LukaScope automates
-                        initial screening using CNNs and Vision Transformers trained to recognise
-                        these abnormalities at scale.
-                    </p>
+                    <div className="info-box">
+                        <p className="text-sm leading-7 text-slate-300">
+                            Malignant lymphoblasts exhibit distinct features&mdash;enlarged nuclei,
+                            high nucleus-to-cytoplasm ratio, irregular chromatin.
+                        </p>
+                        <p className="text-sm leading-7 text-slate-300">
+                            LukaScope automates
+                            initial screening using CNNs and Vision Transformers trained to recognise
+                            these abnormalities at scale.
+                        </p>
+                    </div>
 
                     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                         {pipelineSteps.map((step, i) => (
@@ -326,12 +330,16 @@ export default function AboutPage() {
                             Training Data Sources
                         </h2>
                     </div>
-
-                    <p className="text-sm leading-7 text-slate-300 max-w-3xl">
-                        Models are trained on publicly available, peer-reviewed medical imaging
-                        datasets. Multiple sources improve generalisation across staining
-                        protocols, microscope types, and patient populations.
-                    </p>
+                    <div className="info-box">
+                        <p className="text-sm leading-7 text-slate-300">
+                            Models are trained on publicly available, peer-reviewed medical imaging
+                            datasets.
+                        </p>
+                        <p className="text-sm leading-7 text-slate-300">
+                            Multiple sources improve generalisation across staining
+                            protocols, microscope types, and patient populations.
+                        </p>
+                    </div>
 
                     <div className="grid gap-4 md:grid-cols-3">
                         {datasets.map((ds) => (
@@ -375,12 +383,15 @@ export default function AboutPage() {
                             How the AI Is Trained
                         </h2>
                     </div>
-
-                    <p className="text-sm leading-7 text-slate-300 max-w-3xl">
-                        Training runs in a dedicated Python environment (PyTorch + Ultralytics
-                        YOLO), separate from the production stack. The pipeline follows six
-                        clearly defined stages:
-                    </p>
+                    <div className="info-box">
+                        <p className="text-sm leading-7 text-slate-300">
+                            Training runs in a dedicated Python environment (PyTorch + Ultralytics
+                            YOLO), separate from the production stack.
+                        </p>
+                        <p className="text-sm leading-7 text-slate-300">
+                            The pipeline follows six clearly defined stages:
+                        </p>
+                    </div>
 
                     <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                         {trainingSteps.map((ts) => (
