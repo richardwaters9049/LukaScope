@@ -309,7 +309,7 @@ export default function AboutPage() {
                                     {step.description}
                                 </p>
                                 {i < pipelineSteps.length - 1 && (
-                                    <ArrowRight className="hidden lg:block absolute -right-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white" />
+                                    <ArrowRight className="hidden lg:block absolute -right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-white" />
                                 )}
                             </motion.div>
                         ))}
