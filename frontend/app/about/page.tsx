@@ -291,7 +291,7 @@ export default function AboutPage() {
                         these abnormalities at scale.
                     </p>
 
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                         {pipelineSteps.map((step, i) => (
                             <motion.div
                                 key={step.title}
@@ -309,7 +309,7 @@ export default function AboutPage() {
                                     {step.description}
                                 </p>
                                 {i < pipelineSteps.length - 1 && (
-                                    <ArrowRight className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                                    <ArrowRight className="hidden lg:block absolute -right-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white" />
                                 )}
                             </motion.div>
                         ))}
