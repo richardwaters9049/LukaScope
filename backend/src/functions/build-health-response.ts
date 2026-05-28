@@ -1,6 +1,8 @@
+import { version } from "../../package.json";
+
 export const buildHealthResponse = (environment: string) => ({
   status: "ok",
   environment,
-  version: "1.0.0",
+  version,
   timestamp: new Date().toISOString(),
 });
