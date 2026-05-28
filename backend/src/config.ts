@@ -5,8 +5,14 @@ const parsePort = (value: string | undefined, fallback: number) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const parseOrigins = (value: string | undefined, fallback: string): string | string[] => {
+  const raw = value ?? fallback;
+  const origins = raw.split(",").map((o) => o.trim()).filter(Boolean);
+  return origins.length === 1 ? origins[0] : origins;
+};
+
 export const config = {
   port: parsePort(process.env.PORT, 3001),
   nodeEnv: process.env.NODE_ENV ?? "development",
-  frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000",
+  frontendUrl: parseOrigins(process.env.FRONTEND_URL, "http://localhost:3000"),
 } as const;
