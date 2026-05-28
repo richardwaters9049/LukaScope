@@ -20,7 +20,7 @@ const getStoredUserName = () => {
     return storedName || getDisplayNameFromEmail(email ?? "")
 }
 
-const Navigation = () => {
+export default function Navigation() {
     const router = useRouter()
     const [open, setOpen] = useState(false)
     const userName = useSyncExternalStore(subscribeToStorage, getStoredUserName, () => null)
@@ -63,7 +63,7 @@ const Navigation = () => {
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard">
                         <Image
-                            src="/images/LumaScope Logo 4.png"
+                            src="/images/lukascope-logo.png"
                             alt="LukaScope Logo"
                             width={50}
                             height={50}
@@ -113,5 +113,3 @@ const Navigation = () => {
         </nav>
     )
 }
-
-export default Navigation

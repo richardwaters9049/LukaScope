@@ -5,33 +5,37 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import LogoImg from "@/public/images/LumaScope Logo 4.png"
-import { DEMO_CREDENTIALS, getDisplayNameFromEmail } from "@/lib/auth"
+import LogoImg from "@/public/images/lukascope-logo.png"
+import { getDisplayNameFromEmail } from "@/lib/auth"
 
 export default function Home() {
   const router = useRouter()
 
-  const [email, setEmail] = useState<string>(DEMO_CREDENTIALS.email)
-  const [password, setPassword] = useState<string>(DEMO_CREDENTIALS.password)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
 
   const handleLogin = async () => {
     setError("")
 
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (response.ok) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userName", getDisplayNameFromEmail(email))
-        localStorage.setItem("userEmail", email)
+      if (response.ok) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("userName", getDisplayNameFromEmail(email))
+          localStorage.setItem("userEmail", email)
+        }
+        router.push("/dashboard")
+      } else {
+        setError("Invalid email or password")
       }
-      router.push("/dashboard")
-    } else {
-      setError("Invalid email or password")
+    } catch {
+      setError("Unable to reach the server. Please try again.")
     }
   }
 
@@ -47,14 +51,14 @@ export default function Home() {
 
         <Image
           src={LogoImg}
-          alt="Logo"
+          alt="LukaScope Logo"
           width={140}
           height={140}
         />
 
         <Input
           type="email"
-          placeholder="admin@lukascope.com"
+          placeholder="Email address"
           className="text-2xl border-none text-white"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -62,7 +66,7 @@ export default function Home() {
 
         <Input
           type="password"
-          placeholder="password123"
+          placeholder="Password"
           className="text-2xl border-none text-white"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

@@ -134,7 +134,7 @@ export default function ResultsDetailPage() {
 
                             <div className="image-frame aspect-square w-full overflow-hidden bg-black/20 rounded-xl flex items-center justify-center">
                                 <Image
-                                    src={result.explainability[result.primaryExplainability as keyof typeof result.explainability]}
+                                    src={result.explainability[result.primaryExplainability]}
                                     alt="AI Explainability"
                                     width={640}
                                     height={640}
