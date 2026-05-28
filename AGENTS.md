@@ -33,7 +33,7 @@ LukaScope/
 - **Routes**:
   - `/` - Login screen (MVP static credential check)
   - `/dashboard` - Upload panel and project summary
-  - `/analysis` - Simulated analysis overlay flow
+  - `/dashboard` includes a simulated analysis overlay flow (no separate `/analysis` route)
   - `/results` - Paginated sample result grid
   - `/results/[id]` - Detailed single-sample result view
   - `/about` - About page placeholder

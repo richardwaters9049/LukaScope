@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "LukaScope",
-  description: "Web app",
+  description: "AI-powered blood smear analysis platform for early leukaemia detection",
 };
 
 export default function RootLayout({

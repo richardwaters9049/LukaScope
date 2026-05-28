@@ -75,7 +75,6 @@ export default function GridLayout() {
                                             src={item.imageUrl}
                                             alt={`Item ${item.id}`}
                                             className="rounded-lg"
-                                            priority
                                             width={200}
                                             height={160}
                                         />
