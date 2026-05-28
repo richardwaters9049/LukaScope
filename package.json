@@ -12,6 +12,7 @@
     "build:frontend": "bun run --cwd frontend build",
     "build:backend": "bun run --cwd backend build",
     "lint:frontend": "bun run --cwd frontend lint",
+    "lint:backend": "bun run --cwd backend lint",
     "test:frontend": "bun run --cwd frontend test",
     "test:backend": "bun run --cwd backend test",
     "test:ai": "cd backend/ai && pytest",
