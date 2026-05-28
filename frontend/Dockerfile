@@ -18,9 +18,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json bun.lock* ./
 
-# Install any missing dependencies
-RUN bun install
-
 # Set development environment
 ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1

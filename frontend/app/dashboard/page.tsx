@@ -15,7 +15,7 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import AnalysisOverlay from "@/components/overlay";
 import Image from "next/image";
 
-const DashboardPage = () => {
+export default function DashboardPage() {
     const router = useRouter();
     const [analysing, setAnalysing] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -177,6 +177,4 @@ const DashboardPage = () => {
             <AnalysisOverlay open={analysing} onComplete={() => router.push("/results/1")} />
         </div>
     );
-};
-
-export default DashboardPage;
+}

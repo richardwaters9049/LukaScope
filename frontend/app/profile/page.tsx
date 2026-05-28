@@ -5,32 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { motion, cubicBezier } from "framer-motion";
-
-const pageVariants = {
-    hidden: { opacity: 0, y: 10 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.4,
-            ease: cubicBezier(0.25, 0.1, 0.25, 1),
-            staggerChildren: 0.08
-        }
-    }
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.35,
-            ease: cubicBezier(0.25, 0.1, 0.25, 1)
-        }
-    }
-};
+import { motion } from "framer-motion";
+import { pageVariants, itemVariants } from "@/lib/animations";
 
 export default function ProfilePage() {
     return (
@@ -105,25 +81,21 @@ export default function ProfilePage() {
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-sm text-slate-300">Theme</label>
-                                    <select className="w-full rounded-md bg-slate-800 px-3 py-2 text-sm border border-slate-700 focus:border-slate-500 focus:outline-none">
-                                        <option>System</option>
-                                        <option>Light</option>
-                                        <option>Dark</option>
-                                    </select>
+                                    <Input defaultValue="System" readOnly />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm text-slate-300">Notifications</label>
                                     <div className="space-y-2 text-sm text-slate-200">
                                         <label className="flex items-center gap-2">
-                                            <input type="checkbox" className="accent-blue-500" defaultChecked />
+                                            <Input type="checkbox" className="h-4 w-4 accent-blue-500" defaultChecked />
                                             Email me when a new analysis is completed
                                         </label>
                                         <label className="flex items-center gap-2">
-                                            <input type="checkbox" className="accent-blue-500" defaultChecked />
+                                            <Input type="checkbox" className="h-4 w-4 accent-blue-500" defaultChecked />
                                             Weekly summary of flagged samples
                                         </label>
                                         <label className="flex items-center gap-2">
-                                            <input type="checkbox" className="accent-blue-500" />
+                                            <Input type="checkbox" className="h-4 w-4 accent-blue-500" />
                                             Product updates and release notes
                                         </label>
                                     </div>

@@ -1,3 +1,7 @@
+// TODO: Replace mock data with backend API calls. Explainability images
+// currently share the same paths across all samples — each sample will
+// need its own per-analysis assets once the real pipeline is connected.
+
 export type ExplainabilityKey = "gradient" | "guided_backprop" | "shap";
 
 export type ResultHistoryEntry = {
