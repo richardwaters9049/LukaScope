@@ -225,12 +225,10 @@ flowchart LR
 ### Prerequisites
 
 **Docker Run**:
-
 - Docker 20.10+
 - Docker Compose 2.0+
 
 **Local Development Without Docker**:
-
 - Node.js 20+
 - Bun 1.3+
 - Python 3.11+ (for backend API, workers, and AI training scripts)
@@ -401,7 +399,6 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 - Accessibility and regression checks on core pages before release
 
 **Backend Testing (pytest + FastAPI TestClient)**:
-
 - API tests for health, upload, job polling, result retrieval, review, and training-run creation
 - Unit tests for storage, inference contracts, and reviewed-data retraining eligibility
 - Worker tests for inference and candidate retraining behavior
