@@ -1,3 +1,5 @@
+name: LukaScope
+
 services:
   frontend:
     build:
@@ -9,6 +11,9 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ../frontend:/app
       - /app/node_modules  # Prevent overwriting container node_modules
@@ -33,6 +38,7 @@ services:
       - DATABASE_URL=postgresql+psycopg2://lukascope:lukascope@postgres:5432/lukascope
       - REDIS_URL=redis://redis:6379/0
       - STORAGE_ROOT=/app/data/storage
+      - WATCHFILES_FORCE_POLLING=true
     volumes:
       - ../backend/app:/app/app
       - ../backend/ai:/app/ai

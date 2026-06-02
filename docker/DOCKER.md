@@ -9,7 +9,7 @@ This guide covers the containerized LukaScope stack: Next.js frontend, Python Fa
 Only Docker is required on the host machine for this path.
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 ```
 
 Service URLs:
@@ -43,7 +43,7 @@ The frontend sends uploads to FastAPI. The backend stores the original image, cr
 ## Production-Like Compose
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 docker compose -f docker/docker-compose.yml logs -f python-backend
 docker compose -f docker/docker-compose.yml down
 ```
@@ -58,7 +58,7 @@ docker compose -f docker/docker-compose.yml up -d --build python-backend worker
 ## Development Compose
 
 ```bash
-docker compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 docker compose -f docker/docker-compose.dev.yml logs -f frontend
 docker compose -f docker/docker-compose.dev.yml logs -f python-backend worker
 ```

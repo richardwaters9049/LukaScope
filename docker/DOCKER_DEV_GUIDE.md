@@ -10,7 +10,7 @@ The project uses Docker Compose with hot reload enabled for development. Changes
 
 **Start development environment with hot reload:**
 ```bash
-docker-compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 ```
 
 **View logs:**
@@ -57,14 +57,14 @@ If you encounter permission errors, ensure the containers have proper access to 
 If hot reload stops working:
 ```bash
 docker-compose -f docker/docker-compose.dev.yml down
-docker-compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 ```
 
 ### Production Deployment
 
 For production deployment, use the standard docker-compose.yml:
 ```bash
-docker-compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 ```
 
 Note: Production builds require rebuilding containers to see changes.
