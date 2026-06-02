@@ -45,7 +45,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export function backendAssetUrl(path: string) {
   if (/^https?:\/\//.test(path)) return path;
-  return `${API_URL}${path}`;
+  if (path.startsWith("/assets/")) return `${API_URL}${path}`;
+  return path;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

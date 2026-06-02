@@ -15,23 +15,30 @@ import {
 } from "@/components/ui/pagination";
 import { useEffect, useState } from "react";
 import { backendAssetUrl, displayClassification, fetchResults, type ResultSummary } from "@/lib/api";
+import { demoResults } from "@/lib/demo-results";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 3;
 
 export default function GridLayout() {
     const [page, setPage] = useState(1);
     const [results, setResults] = useState<ResultSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [usingDemoResults, setUsingDemoResults] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
         fetchResults()
             .then((items) => {
-                if (!cancelled) setResults(items);
+                if (cancelled) return;
+                setUsingDemoResults(items.length === 0);
+                setResults(items.length > 0 ? items : demoResults);
             })
             .catch((err) => {
-                if (!cancelled) setError(err instanceof Error ? err.message : "Unable to load results.");
+                if (cancelled) return;
+                setUsingDemoResults(true);
+                setResults(demoResults);
+                setError(err instanceof Error ? err.message : "Unable to load live results.");
             })
             .finally(() => {
                 if (!cancelled) setLoading(false);
@@ -46,21 +53,21 @@ export default function GridLayout() {
     const paginatedItems = results.slice(startIndex, startIndex + PAGE_SIZE);
 
     return (
-        <div className="main-grid">
+        <div className="min-h-screen w-full bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
             <Navigation />
 
             <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 }}
-                className="title-container flex flex-col items-center gap-8 p-6 m-8"
+                className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-4 py-10 md:px-8"
             >
-                <div className="flex items-center w-full">
+                <div className="flex w-full flex-col items-center gap-4 md:flex-row md:justify-between">
                     <div className="flex-1" />
-                    <h1 className="text-5xl font-medium text-center tracking-wider">
+                    <h1 className="text-center text-4xl font-semibold tracking-tight text-white md:text-5xl">
                         Sample Analysis Results
                     </h1>
-                    <div className="flex-1 flex justify-end">
+                    <div className="flex flex-1 justify-end">
                         <Link
                             href="/dashboard"
                             className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
@@ -70,7 +77,7 @@ export default function GridLayout() {
                     </div>
                 </div>
 
-                <p className="text-center text-2xl text-white">
+                <p className="text-center text-lg text-slate-300 md:text-2xl">
                     Review your sample analysis results below
                 </p>
             </motion.div>
@@ -80,11 +87,17 @@ export default function GridLayout() {
                 <p className="text-center text-slate-200 py-8">Loading analysis results...</p>
             )}
 
-            {error && (
-                <p className="text-center text-red-300 py-8">{error}</p>
+            {usingDemoResults && (
+                <p className="text-center text-sm text-slate-300 -mt-4">
+                    Showing curated demo results. Live uploads will appear here when analyses complete.
+                </p>
             )}
 
-            {!loading && !error && results.length === 0 && (
+            {error && (
+                <p className="text-center text-xs text-slate-400 py-2">Live backend note: {error}</p>
+            )}
+
+            {!loading && results.length === 0 && (
                 <div className="flex flex-col items-center gap-4 py-10 text-slate-200">
                     <p>No completed analysis results yet.</p>
                     <Link
@@ -96,7 +109,7 @@ export default function GridLayout() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[15px] gap-y-[20px] p-4">
+            <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 px-4 pb-8 sm:grid-cols-2 lg:grid-cols-3 md:px-8">
                 {paginatedItems.map((item, index) => {
                     const isPositive = item.classification === "positive" || item.classification === "suspicious";
 
@@ -108,7 +121,7 @@ export default function GridLayout() {
                             transition={{ duration: 0.8, delay: index * 0.08 }}
                         >
                             <Link href={`/results/${item.id}`} className="block">
-                                <Card className="overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl transition-transform duration-300">
+                                <Card className="overflow-hidden cursor-pointer border-white/10 bg-slate-950/65 text-white shadow-xl hover:scale-105 hover:shadow-2xl transition-transform duration-300">
                                     {/* Image */}
                                     <div className="w-full flex justify-center items-center p-2">
                                         <Image
@@ -158,6 +171,7 @@ export default function GridLayout() {
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious
+                                    className="text-white hover:bg-slate-800 hover:text-white"
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 />
                             </PaginationItem>
@@ -166,6 +180,7 @@ export default function GridLayout() {
                                 <PaginationItem key={i}>
                                     <PaginationLink
                                         isActive={page === i + 1}
+                                        className="text-white hover:bg-slate-800 hover:text-white data-[active=true]:bg-slate-800 data-[active=true]:text-white"
                                         onClick={() => setPage(i + 1)}
                                     >
                                         {i + 1}
@@ -175,6 +190,7 @@ export default function GridLayout() {
 
                             <PaginationItem>
                                 <PaginationNext
+                                    className="text-white hover:bg-slate-800 hover:text-white"
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 />
                             </PaginationItem>
@@ -182,7 +198,7 @@ export default function GridLayout() {
                     </Pagination>
 
                     {/* Count */}
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="mt-2 text-sm text-slate-300">
                         Showing {startIndex + 1}–
                         {Math.min(startIndex + PAGE_SIZE, results.length)} of{" "}
                         {results.length} results
