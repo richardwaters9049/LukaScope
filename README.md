@@ -245,7 +245,7 @@ cd LukaScope
 This is the recommended path for running the whole app. It does not require Bun, Node.js, Python, Postgres, or Redis to be installed on your host machine.
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 ```
 
 Then open:
@@ -325,7 +325,7 @@ python -m app.worker
 
 ```bash
 # Build and start all services
-docker-compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 
 # View logs
 docker-compose -f docker/docker-compose.yml logs -f
@@ -345,7 +345,7 @@ For development with live code reloading:
 
 ```bash
 # Use development configuration with hot reload
-docker-compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 
 # View logs
 docker-compose -f docker/docker-compose.dev.yml logs -f frontend
@@ -480,7 +480,7 @@ The project includes comprehensive Docker containerization for production deploy
 
 ```bash
 # Build and start all services
-docker-compose -f docker/docker-compose.yml up -d --build
+./scripts/docker-up.sh
 
 # View logs
 docker-compose -f docker/docker-compose.yml logs -f
@@ -496,7 +496,7 @@ docker-compose -f docker/docker-compose.yml up -d --build frontend
 
 ```bash
 # Use development configuration with hot reload
-docker-compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 
 # View logs
 docker-compose -f docker/docker-compose.dev.yml logs -f frontend

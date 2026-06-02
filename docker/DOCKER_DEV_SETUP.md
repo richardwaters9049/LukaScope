@@ -7,7 +7,7 @@
 ## Start
 
 ```bash
-docker compose -f docker/docker-compose.dev.yml up -d --build
+./scripts/docker-dev.sh
 ```
 
 Service URLs:
