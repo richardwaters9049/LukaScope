@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope Logo" width="120" />
+  <img src="/frontend/public/images/lukascope-logo.png" alt="LukaScope Logo" width="120" />
 </p>
 
 <p align="center">
@@ -24,29 +24,55 @@ This repository contains a Next.js frontend and a Python FastAPI backend. Bun ma
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Project Aim](#project-aim)
-- [Expected Outcomes](#expected-outcomes)
-- [Current Status](#current-status)
-- [AI Datasets and Training Plan](#ai-datasets-and-training-plan)
-- [Training Methods and Model Strategy](#training-methods-and-model-strategy)
-- [How Python Trains the AI](#how-python-trains-the-ai)
-- [Screenshots](#screenshots)
-- [System Architecture](#system-architecture)
-- [Tech Stack](#tech-stack)
-- [Setup and Installation](#setup-and-installation)
-- [Workspace Dependency Model (Bun)](#workspace-dependency-model-bun)
-- [Running the Project](#running-the-project)
-- [Available Scripts](#available-scripts)
-- [Testing Strategy](#testing-strategy)
-- [Docker Deployment](#docker-deployment)
-- [Environment Variables (Backend)](#environment-variables-backend)
-- [API and Routes](#api-and-routes)
-- [UI Pages](#ui-pages)
-- [Future Improvements](#future-improvements)
-- [Contributing](#contributing)
-- [Additional Documentation](#additional-documentation)
-- [License](#license)
+- [LukaScope](#lukascope)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+  - [Project Aim](#project-aim)
+  - [Expected Outcomes](#expected-outcomes)
+  - [Current Status](#current-status)
+  - [AI Datasets and Training Plan](#ai-datasets-and-training-plan)
+  - [Training Methods and Model Strategy](#training-methods-and-model-strategy)
+  - [How Python Trains the AI](#how-python-trains-the-ai)
+  - [Screenshots](#screenshots)
+  - [System Architecture](#system-architecture)
+  - [Tech Stack](#tech-stack)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+    - [AI Training](#ai-training)
+  - [Setup and Installation](#setup-and-installation)
+    - [Prerequisites](#prerequisites)
+    - [1) Clone and enter project](#1-clone-and-enter-project)
+    - [2) Run With Docker](#2-run-with-docker)
+    - [3) Optional Local Development Without Docker](#3-optional-local-development-without-docker)
+    - [Workspace Dependency Model (Bun)](#workspace-dependency-model-bun)
+  - [Running the Project](#running-the-project)
+    - [Option A: Local Development Without Docker](#option-a-local-development-without-docker)
+    - [Option B: Docker Deployment](#option-b-docker-deployment)
+    - [Option C: Docker Development with Hot Reload](#option-c-docker-development-with-hot-reload)
+  - [Available Scripts](#available-scripts)
+    - [Root workspace (`/`)](#root-workspace-)
+  - [Testing Strategy](#testing-strategy)
+    - [Test Frameworks](#test-frameworks)
+    - [Running Tests](#running-tests)
+    - [Test execution model](#test-execution-model)
+  - [Docker Deployment](#docker-deployment)
+    - [Docker Architecture](#docker-architecture)
+    - [Docker Files](#docker-files)
+    - [Docker Commands](#docker-commands)
+    - [Docker Benefits](#docker-benefits)
+    - [Detailed Documentation](#detailed-documentation)
+  - [Environment Variables (Backend)](#environment-variables-backend)
+  - [API and Routes](#api-and-routes)
+    - [Implemented](#implemented)
+    - [Planned](#planned)
+  - [UI Pages](#ui-pages)
+  - [Future Improvements](#future-improvements)
+    - [Near-term priorities](#near-term-priorities)
+    - [Product and UX enhancements](#product-and-ux-enhancements)
+    - [Engineering and quality improvements](#engineering-and-quality-improvements)
+  - [Contributing](#contributing)
+  - [Additional Documentation](#additional-documentation)
+  - [License](#license)
 
 ## Project Overview
 
@@ -71,23 +97,23 @@ Deliver a clinician-friendly and explainable AI experience for blood smear analy
 
 ## Current Status
 
-| Area | Status | Notes |
-|---|---|---|
-| Frontend pages | Implemented | Login, dashboard, analysis overlay, results list, result detail |
-| Frontend login endpoint | Implemented (MVP) | Static credential check in `frontend/app/api/login/route.ts` |
-| Python backend API | Implemented | FastAPI health, upload, job polling, results, review, training-run endpoints |
-| Async analysis | Implemented | Redis/RQ queue support with inline fallback for tests/local development |
-| Persistent datastore layer | Implemented | SQLAlchemy with SQLite local default and Postgres support |
+| Area                       | Status            | Notes                                                                        |
+| -------------------------- | ----------------- | ---------------------------------------------------------------------------- |
+| Frontend pages             | Implemented       | Login, dashboard, analysis overlay, results list, result detail              |
+| Frontend login endpoint    | Implemented (MVP) | Static credential check in `frontend/app/api/login/route.ts`                 |
+| Python backend API         | Implemented       | FastAPI health, upload, job polling, results, review, training-run endpoints |
+| Async analysis             | Implemented       | Redis/RQ queue support with inline fallback for tests/local development      |
+| Persistent datastore layer | Implemented       | SQLAlchemy with SQLite local default and Postgres support                    |
 
 ## AI Datasets and Training Plan
 
 The following publicly available datasets are planned as the training foundation:
 
-| Dataset | Why we use it | Notes |
-|---|---|---|
-| [C-NMC 2019 (TCIA)](https://www.cancerimagingarchive.net/collection/c-nmc-2019/) | Core leukemia classification data (normal vs malignant lymphoblasts) | Used in the ISBI 2019 ALL challenge; primary dataset for ALL-focused baseline training |
-| [ALL-IDB (ALL-IDB1 / ALL-IDB2)](https://scotti.di.unimi.it/all/) | Additional ALL-focused microscopy data for generalization and robustness | Includes whole-image and cropped-cell variants suitable for classification and ROI analysis |
-| [Raabin-WBC](https://www.raabindata.com/free-data/) | Large WBC morphology diversity to improve feature robustness and pretraining | Useful for representation learning and domain adaptation before ALL-specific fine-tuning |
+| Dataset                                                                          | Why we use it                                                                | Notes                                                                                       |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [C-NMC 2019 (TCIA)](https://www.cancerimagingarchive.net/collection/c-nmc-2019/) | Core leukemia classification data (normal vs malignant lymphoblasts)         | Used in the ISBI 2019 ALL challenge; primary dataset for ALL-focused baseline training      |
+| [ALL-IDB (ALL-IDB1 / ALL-IDB2)](https://scotti.di.unimi.it/all/)                 | Additional ALL-focused microscopy data for generalization and robustness     | Includes whole-image and cropped-cell variants suitable for classification and ROI analysis |
+| [Raabin-WBC](https://www.raabindata.com/free-data/)                              | Large WBC morphology diversity to improve feature robustness and pretraining | Useful for representation learning and domain adaptation before ALL-specific fine-tuning    |
 
 Planned dataset workflow:
 
@@ -103,17 +129,17 @@ Important: dataset licenses/usage terms will be reviewed per source before produ
 Planned training pipeline for leukemia detection:
 
 1. **Preprocessing**
-Normalize stain/contrast, quality-filter blurred slides, and standardize image resolution.
+   Normalize stain/contrast, quality-filter blurred slides, and standardize image resolution.
 2. **Cell/ROI localization**
-Use detection/segmentation to isolate diagnostically relevant regions before final classification.
+   Use detection/segmentation to isolate diagnostically relevant regions before final classification.
 3. **Leukemia classification**
-Train deep CNN/ViT backbones with transfer learning on ALL-focused labels (normal vs suspicious/malignant).
+   Train deep CNN/ViT backbones with transfer learning on ALL-focused labels (normal vs suspicious/malignant).
 4. **Hybrid inference (optional)**
-Fuse deep visual embeddings with classic ML (e.g., gradient boosting) for calibrated decision boundaries.
+   Fuse deep visual embeddings with classic ML (e.g., gradient boosting) for calibrated decision boundaries.
 5. **Explainability layer**
-Generate SHAP/gradient-guided heatmaps to show why the model flagged a sample.
+   Generate SHAP/gradient-guided heatmaps to show why the model flagged a sample.
 6. **Continuous learning loop**
-Use clinician-reviewed corrections and newly labeled data to improve performance over time.
+   Use clinician-reviewed corrections and newly labeled data to improve performance over time.
 
 Evaluation plan:
 
@@ -145,13 +171,13 @@ The FastAPI backend serves inference outputs while `backend/ai` remains focused 
 
 The images below are visual assets used by the current demo UI and explainability flow.
 
-| Preview | Description |
-|---|---|
-| <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope branding logo" width="220" /> | **Branding logo** used in the login/dashboard navigation context. |
-| <img src="./frontend/public/images/sample_1P.png" alt="Example blood smear sample result" width="220" /> | **Example blood smear sample** shown in results cards and detail views. |
-| <img src="./frontend/public/images/shap_heatmap.png" alt="SHAP explainability heatmap" width="220" /> | **SHAP explainability heatmap** highlighting influential regions for model prediction. |
-| <img src="./frontend/public/images/gradient_heatmap.png" alt="Gradient explainability heatmap" width="220" /> | **Gradient-based explainability map** showing model attention across the image. |
-| <img src="./frontend/public/images/guided_backprop.png" alt="Guided backpropagation visualization" width="220" /> | **Guided backpropagation view** for feature-level interpretation support. |
+| Preview                                                                                                           | Description                                                                            |
+| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| <img src="./frontend/public/images/LumaScope%20Logo%204.png" alt="LukaScope branding logo" width="220" />         | **Branding logo** used in the login/dashboard navigation context.                      |
+| <img src="./frontend/public/images/sample_1P.png" alt="Example blood smear sample result" width="220" />          | **Example blood smear sample** shown in results cards and detail views.                |
+| <img src="./frontend/public/images/shap_heatmap.png" alt="SHAP explainability heatmap" width="220" />             | **SHAP explainability heatmap** highlighting influential regions for model prediction. |
+| <img src="./frontend/public/images/gradient_heatmap.png" alt="Gradient explainability heatmap" width="220" />     | **Gradient-based explainability map** showing model attention across the image.        |
+| <img src="./frontend/public/images/guided_backprop.png" alt="Guided backpropagation visualization" width="220" /> | **Guided backpropagation view** for feature-level interpretation support.              |
 
 ## System Architecture
 
@@ -199,10 +225,12 @@ flowchart LR
 ### Prerequisites
 
 **Docker Run**:
+
 - Docker 20.10+
 - Docker Compose 2.0+
 
 **Local Development Without Docker**:
+
 - Node.js 20+
 - Bun 1.3+
 - Python 3.11+ (for backend API, workers, and AI training scripts)
@@ -309,6 +337,7 @@ docker-compose -f docker/docker-compose.yml down
 ```
 
 **Service URLs**:
+
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:3001`
 
@@ -330,6 +359,7 @@ docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 **Key Development Features**:
+
 - Volume mounts sync local code changes to containers
 - Frontend uses Next.js dev server with hot reload
 - Backend uses Uvicorn with auto-reload
@@ -343,19 +373,19 @@ docker-compose -f docker/docker-compose.dev.yml down
 
 ### Root workspace (`/`)
 
-| Command | Description |
-|---|---|
-| `bun run dev:frontend` | Start frontend dev server |
-| `bun run dev:backend` | Start Python backend dev server |
-| `bun run dev:worker` | Start Python analysis/training worker |
-| `bun run build:frontend` | Build frontend |
-| `bun run build:backend` | Compile Python backend |
-| `bun run lint:frontend` | Run frontend lint |
-| `bun run test` | Run all frontend and backend tests |
-| `bun run test:frontend` | Run frontend tests |
-| `bun run test:backend` | Run backend tests |
-| `bun run test:ai` | Run AI training tests |
-| `bun run test:coverage` | Run all tests with coverage reports |
+| Command                  | Description                           |
+| ------------------------ | ------------------------------------- |
+| `bun run dev:frontend`   | Start frontend dev server             |
+| `bun run dev:backend`    | Start Python backend dev server       |
+| `bun run dev:worker`     | Start Python analysis/training worker |
+| `bun run build:frontend` | Build frontend                        |
+| `bun run build:backend`  | Compile Python backend                |
+| `bun run lint:frontend`  | Run frontend lint                     |
+| `bun run test`           | Run all frontend and backend tests    |
+| `bun run test:frontend`  | Run frontend tests                    |
+| `bun run test:backend`   | Run backend tests                     |
+| `bun run test:ai`        | Run AI training tests                 |
+| `bun run test:coverage`  | Run all tests with coverage reports   |
 
 ## Testing Strategy
 
@@ -364,17 +394,20 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 ### Test Frameworks
 
 **Frontend Testing (Jest + React Testing Library)**:
+
 - Unit tests for UI components, utility functions, and page-level logic
 - Integration tests for key flows: login, dashboard interactions, analysis state transitions, and results rendering
 - End-to-end tests for critical user journeys in a browser environment
 - Accessibility and regression checks on core pages before release
 
 **Backend Testing (pytest + FastAPI TestClient)**:
+
 - API tests for health, upload, job polling, result retrieval, review, and training-run creation
 - Unit tests for storage, inference contracts, and reviewed-data retraining eligibility
 - Worker tests for inference and candidate retraining behavior
 
 **AI Training Testing (pytest + pytest-cov)**:
+
 - Unit tests for data preprocessing functions
 - Integration tests for model training pipeline
 - Validation tests for model outputs and metrics
@@ -383,6 +416,7 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 ### Running Tests
 
 **Local Testing**:
+
 ```bash
 # Run all tests
 bun run test
@@ -397,6 +431,7 @@ bun run test:coverage
 ```
 
 **Docker Testing**:
+
 ```bash
 # Run all tests in Docker
 docker-compose -f docker/docker-compose.test.yml up --build
@@ -415,6 +450,7 @@ docker-compose -f docker/docker-compose.test.yml --profile ai up ai-test
 4. Track coverage trend and enforce minimum thresholds as the suite grows
 
 **Coverage Reports**:
+
 - Frontend: `frontend/coverage/`
 - Backend: `backend/coverage/`
 - AI: `backend/ai/htmlcov/`
@@ -444,6 +480,7 @@ The project includes comprehensive Docker containerization for production deploy
 ### Docker Commands
 
 **Production Deployment**:
+
 ```bash
 # Build and start all services
 docker-compose -f docker/docker-compose.yml up -d --build
@@ -459,6 +496,7 @@ docker-compose -f docker/docker-compose.yml up -d --build frontend
 ```
 
 **Development with Hot Reload**:
+
 ```bash
 # Use development configuration with hot reload
 docker-compose -f docker/docker-compose.dev.yml up -d --build
@@ -473,6 +511,7 @@ docker-compose -f docker/docker-compose.dev.yml down
 ```
 
 **Testing with Docker**:
+
 ```bash
 # Run all tests
 docker-compose -f docker/docker-compose.test.yml up --build
@@ -483,6 +522,7 @@ docker-compose -f docker/docker-compose.test.yml up backend-test
 ```
 
 **AI Training**:
+
 ```bash
 # Run AI training on-demand
 docker-compose -f docker/docker-compose.yml --profile ai up ai-training
@@ -507,10 +547,10 @@ For comprehensive Docker documentation, see [`DOCKER.md`](./docker/DOCKER.md).
 
 Based on [`backend/.env.example`](./backend/.env.example):
 
-| Variable | Purpose | Example |
-|---|---|---|
-| `PORT` | API server port | `3001` |
-| `NODE_ENV` | Runtime environment | `development` |
+| Variable       | Purpose             | Example                 |
+| -------------- | ------------------- | ----------------------- |
+| `PORT`         | API server port     | `3001`                  |
+| `NODE_ENV`     | Runtime environment | `development`           |
 | `FRONTEND_URL` | CORS allowed origin | `http://localhost:3000` |
 
 ## API and Routes
@@ -529,14 +569,14 @@ Based on [`backend/.env.example`](./backend/.env.example):
 
 ## UI Pages
 
-| Route | Purpose |
-|---|---|
-| `/` | Login screen (MVP static credential check) |
-| `/dashboard` | Upload panel and project summary |
-| `/analysis` | Simulated analysis overlay flow |
-| `/results` | Paginated sample result grid |
-| `/results_id` | Detailed single-sample result view |
-| `/about` | About page placeholder |
+| Route         | Purpose                                    |
+| ------------- | ------------------------------------------ |
+| `/`           | Login screen (MVP static credential check) |
+| `/dashboard`  | Upload panel and project summary           |
+| `/analysis`   | Simulated analysis overlay flow            |
+| `/results`    | Paginated sample result grid               |
+| `/results_id` | Detailed single-sample result view         |
+| `/about`      | About page placeholder                     |
 
 ## Future Improvements
 
