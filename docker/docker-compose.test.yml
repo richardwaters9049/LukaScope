@@ -24,13 +24,11 @@ services:
       target: test
     environment:
       - NODE_ENV=test
+      - RUN_JOBS_INLINE=true
     volumes:
-      - ../backend:/app/backend
-      - ../package.json:/app/package.json
-      - ../bun.lock:/app/bun.lock
-      - /app/node_modules
-      - /app/backend/node_modules
-      - /app/backend/dist
+      - ../backend/app:/app/app
+      - ../backend/tests:/app/tests
+      - ../backend/pytest.ini:/app/pytest.ini
     networks:
       - lukascope-test-network
 

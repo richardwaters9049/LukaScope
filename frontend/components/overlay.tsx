@@ -3,14 +3,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate, motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { fetchAnalysisJob, type JobStatus } from '@/lib/api'
 
 type Props = {
     open: boolean
-    onComplete: () => void
+    jobId: string | null
+    onComplete: (resultId: string) => void
+    onError: (message: string) => void
 }
 
-export default function AnalysisOverlay({ open, onComplete }: Props) {
+export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Props) {
     const [stage, setStage] = useState<'scan' | 'detect' | 'explain'>('scan')
+    const [status, setStatus] = useState<JobStatus>('queued')
     const [confidence, setConfidence] = useState(72)
     const [displayConfidence, setDisplayConfidence] = useState(72)
     const confidenceRef = useRef(72)
@@ -42,35 +46,54 @@ export default function AnalysisOverlay({ open, onComplete }: Props) {
     }, [confidence])
 
     useEffect(() => {
-        if (!open) return
+        if (!open || !jobId) return
 
         let cancelled = false
+        let timer: ReturnType<typeof setTimeout> | undefined
 
         const run = async () => {
             setStage('scan')
+            setStatus('queued')
             setConfidence(72)
 
-            await wait(2200)
-            if (cancelled) return
-            setConfidence(89)
-            setStage('detect')
+            const poll = async () => {
+                try {
+                    const job = await fetchAnalysisJob(jobId)
+                    if (cancelled) return
+                    setStatus(job.status)
 
-            await wait(2200)
-            if (cancelled) return
-            setConfidence(92)
-            setStage('explain')
+                    if (job.status === 'queued') {
+                        setStage('scan')
+                        setConfidence(72)
+                    } else if (job.status === 'running') {
+                        setStage('detect')
+                        setConfidence(86)
+                    } else if (job.status === 'completed' && job.result_id) {
+                        setStage('explain')
+                        setConfidence(96)
+                        timer = setTimeout(() => onComplete(job.result_id as string), 650)
+                        return
+                    } else if (job.status === 'failed') {
+                        onError(job.error_message ?? 'Analysis failed. Please try another sample.')
+                        return
+                    }
 
-            await wait(2600)
-            if (cancelled) return
-            onComplete()
+                    timer = setTimeout(poll, 1200)
+                } catch (error) {
+                    if (!cancelled) onError(error instanceof Error ? error.message : 'Unable to read analysis status.')
+                }
+            }
+
+            await poll()
         }
 
         run()
 
         return () => {
             cancelled = true
+            if (timer) clearTimeout(timer)
         }
-    }, [open, onComplete])
+    }, [open, jobId, onComplete, onError])
 
     return (
         <AnimatePresence>
@@ -134,6 +157,10 @@ export default function AnalysisOverlay({ open, onComplete }: Props) {
                                     </AnimatePresence>
                                 </h1>
 
+                                <p className="text-sm uppercase tracking-[0.2em] text-slate-300">
+                                    {status}
+                                </p>
+
                                 <p className="text-xl">
                                     Confidence:&nbsp;
                                     <span className="text-green-400 font-semibold">
@@ -178,5 +205,3 @@ const FlashBox = ({ x, y }: { x: string; y: string }) => (
         style={{ left: x, top: y, width: 80, height: 80 }}
     />
 )
-
-const wait = (ms: number) => new Promise(res => setTimeout(res, ms))

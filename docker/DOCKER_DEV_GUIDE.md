@@ -16,7 +16,8 @@ docker-compose -f docker/docker-compose.dev.yml up -d --build
 **View logs:**
 ```bash
 docker-compose -f docker/docker-compose.dev.yml logs -f frontend
-docker-compose -f docker/docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f python-backend
+docker-compose -f docker/docker-compose.dev.yml logs -f worker
 ```
 
 **Stop development environment:**
@@ -33,12 +34,14 @@ docker-compose -f docker/docker-compose.dev.yml down
 
 2. **Hot reload works for:**
    - Frontend: All files in `frontend/` directory
-   - Backend: All files in `backend/` directory
+   - Backend API: Files in `backend/app/`
+   - AI workspace: Files in `backend/ai/`
 
 3. **Volume mounts are configured to:**
    - Mount your local code into the container
    - Preserve container `node_modules` (prevents conflicts)
-   - Preserve build artifacts (`.next`, `dist`)
+   - Preserve frontend build artifacts (`.next`)
+   - Preserve backend generated assets in the shared Docker volume
 
 ### Troubleshooting
 

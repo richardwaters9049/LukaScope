@@ -13,17 +13,37 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
-import { resultsData } from "@/lib/results-data";
+import { useEffect, useState } from "react";
+import { backendAssetUrl, displayClassification, fetchResults, type ResultSummary } from "@/lib/api";
 
 const PAGE_SIZE = 6;
 
 export default function GridLayout() {
     const [page, setPage] = useState(1);
+    const [results, setResults] = useState<ResultSummary[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    const totalPages = Math.ceil(resultsData.length / PAGE_SIZE);
+    useEffect(() => {
+        let cancelled = false;
+        fetchResults()
+            .then((items) => {
+                if (!cancelled) setResults(items);
+            })
+            .catch((err) => {
+                if (!cancelled) setError(err instanceof Error ? err.message : "Unable to load results.");
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
     const startIndex = (page - 1) * PAGE_SIZE;
-    const paginatedItems = resultsData.slice(startIndex, startIndex + PAGE_SIZE);
+    const paginatedItems = results.slice(startIndex, startIndex + PAGE_SIZE);
 
     return (
         <div className="main-grid">
@@ -56,9 +76,29 @@ export default function GridLayout() {
             </motion.div>
 
             {/* GRID */}
+            {loading && (
+                <p className="text-center text-slate-200 py-8">Loading analysis results...</p>
+            )}
+
+            {error && (
+                <p className="text-center text-red-300 py-8">{error}</p>
+            )}
+
+            {!loading && !error && results.length === 0 && (
+                <div className="flex flex-col items-center gap-4 py-10 text-slate-200">
+                    <p>No completed analysis results yet.</p>
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                    >
+                        Upload a sample
+                    </Link>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[15px] gap-y-[20px] p-4">
                 {paginatedItems.map((item, index) => {
-                    const isPositive = item.classification === "Positive";
+                    const isPositive = item.classification === "positive" || item.classification === "suspicious";
 
                     return (
                         <motion.div
@@ -72,23 +112,24 @@ export default function GridLayout() {
                                     {/* Image */}
                                     <div className="w-full flex justify-center items-center p-2">
                                         <Image
-                                            src={item.imageUrl}
+                                            src={backendAssetUrl(item.image_url)}
                                             alt={`Item ${item.id}`}
                                             className="rounded-lg"
                                             width={200}
                                             height={160}
+                                            unoptimized
                                         />
                                     </div>
 
                                     {/* Content */}
                                     <CardContent className="flex flex-col gap-2 p-4">
                                         <div className="flex justify-between text-sm text-white">
-                                            <span>{item.date.split(" ")[0]}</span>
-                                            <span>Sample ID: {item.id}</span>
+                                            <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                                            <span>Sample ID: {item.sample_id.slice(0, 8)}</span>
                                         </div>
 
                                         <div className="text-white font-medium">
-                                            {item.uploadedBy}
+                                            {item.uploaded_by}
                                         </div>
 
                                         {/* Classification Preview */}
@@ -96,7 +137,7 @@ export default function GridLayout() {
                                             className={`text-sm font-semibold ${isPositive ? "text-red-500" : "text-green-500"
                                                 }`}
                                         >
-                                            {item.classification} — {item.confidence}%
+                                            {displayClassification(item.classification)} — {Math.round(item.confidence)}%
                                         </div>
 
                                         <div className="text-sm text-slate-300 pt-1">
@@ -111,7 +152,7 @@ export default function GridLayout() {
             </div>
 
             {/* PAGINATION */}
-            {resultsData.length > PAGE_SIZE && (
+            {results.length > PAGE_SIZE && (
                 <div className="flex flex-col items-center gap-2 pb-6">
                     <Pagination>
                         <PaginationContent>
@@ -143,8 +184,8 @@ export default function GridLayout() {
                     {/* Count */}
                     <p className="text-sm text-muted-foreground mt-2">
                         Showing {startIndex + 1}–
-                        {Math.min(startIndex + PAGE_SIZE, resultsData.length)} of{" "}
-                        {resultsData.length} results
+                        {Math.min(startIndex + PAGE_SIZE, results.length)} of{" "}
+                        {results.length} results
                     </p>
                 </div>
             )}

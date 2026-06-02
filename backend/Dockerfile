@@ -1,104 +1,36 @@
-# Backend Dockerfile for LukaScope
-FROM node:20-alpine AS base
+FROM python:3.11-slim AS base
 
-# Install bun once in the base stage
-RUN npm install -g bun@1.3.1
-
-# Install dependencies only when needed
-FROM base AS deps
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lock* ./
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
-RUN bun install
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Development stage
+COPY backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend/app ./app
+COPY backend/ai ./ai
+COPY backend/pytest.ini ./pytest.ini
+COPY backend/tests ./tests
+
 FROM base AS dev
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
-COPY --from=deps /app/backend/node_modules ./backend/node_modules
-
-# Copy package files for potential reinstall
-COPY package.json bun.lock* ./
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
-
-# Set development environment
-ENV NODE_ENV=development
-
 EXPOSE 3001
+CMD ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "3001"]
 
-# Set working directory for development
-WORKDIR /app/backend
-
-# Start development server with hot reload
-CMD ["bun", "run", "dev"]
-
-# Builder stage
-FROM base AS builder
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
-COPY --from=deps /app/backend/node_modules ./backend/node_modules
-
-# Copy source files
-COPY . .
-
-# Set environment variables
-ENV NODE_ENV=production
-
-# Build backend TypeScript
-RUN bun run build:backend
-
-# Test stage
 FROM base AS test
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
-COPY --from=deps /app/backend/node_modules ./backend/node_modules
-
-# Copy source files
-COPY . .
-
-# Set environment variables
 ENV NODE_ENV=test
+ENV RUN_JOBS_INLINE=true
+CMD ["pytest"]
 
-# Run tests
-RUN bun run --cwd backend test:coverage
-
-# Production stage
 FROM base AS runner
-WORKDIR /app
-
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 backend
-
-# Copy only built artefacts and package files
-COPY --from=builder /app/backend/dist ./backend/dist
-COPY --from=builder /app/backend/package.json ./backend/
-
-# Install production dependencies in backend directory
-WORKDIR /app/backend
-RUN bun install --production
-
+RUN useradd -m -u 1001 backend && mkdir -p /app/data && chown -R backend:backend /app
 USER backend
-
 EXPOSE 3001
-
-ENV PORT=3001
-ENV NODE_ENV=production
-
-# Start the backend server
-CMD ["bun", "run", "start"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3001"]
