@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Navigation from "@/components/ui/nav";
+import { HomeIcon } from "@heroicons/react/24/outline";
 import {
     Pagination,
     PaginationContent,
@@ -57,8 +58,8 @@ export default function GridLayout() {
             <Navigation />
 
             <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 }}
                 className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-4 py-10 md:px-8"
             >
@@ -70,9 +71,11 @@ export default function GridLayout() {
                     <div className="flex flex-1 justify-end">
                         <Link
                             href="/dashboard"
-                            className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                            aria-label="Back to dashboard"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
                         >
-                            ← Back to Dashboard
+                            <HomeIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="hidden whitespace-nowrap sm:inline">Back to Dashboard</span>
                         </Link>
                     </div>
                 </div>
@@ -88,7 +91,7 @@ export default function GridLayout() {
             )}
 
             {usingDemoResults && (
-                <p className="text-center text-sm text-slate-300 -mt-4">
+                <p className="mb-8 text-center text-sm text-slate-300">
                     Showing curated demo results. Live uploads will appear here when analyses complete.
                 </p>
             )}

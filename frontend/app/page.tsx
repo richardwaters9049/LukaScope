@@ -7,6 +7,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import LogoImg from "@/public/images/lukascope-logo.png"
 import { getDisplayNameFromEmail } from "@/lib/auth"
+import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 
 export default function Home() {
   const router = useRouter()
@@ -30,6 +31,7 @@ export default function Home() {
           localStorage.setItem("userName", getDisplayNameFromEmail(email))
           localStorage.setItem("userEmail", email)
         }
+        prefetchAuthenticatedRoutes(router)
         router.push("/dashboard")
       } else {
         setError("Invalid email or password")
@@ -54,6 +56,7 @@ export default function Home() {
           alt="LukaScope Logo"
           width={140}
           height={140}
+          loading="eager"
         />
 
         <Input

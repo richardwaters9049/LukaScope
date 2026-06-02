@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useSyncExternalStore } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
 import { getDisplayNameFromEmail } from "@/lib/auth"
+import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 
 const subscribeToStorage = (onStoreChange: () => void) => {
     window.addEventListener("storage", onStoreChange)
@@ -24,6 +25,10 @@ export default function Navigation() {
     const router = useRouter()
     const [open, setOpen] = useState(false)
     const userName = useSyncExternalStore(subscribeToStorage, getStoredUserName, () => null)
+
+    useEffect(() => {
+        prefetchAuthenticatedRoutes(router)
+    }, [router])
 
     const handleLogout = async () => {
         await fetch("/api/login", { method: "DELETE" })
