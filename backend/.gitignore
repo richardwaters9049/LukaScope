@@ -11,6 +11,11 @@ dist/
 build/
 
 # Python AI
+.venv/
+data/
+htmlcov/
+.pytest_cache/
+**/__pycache__/
 ai/.venv/
 ai/**/__pycache__/
 ai/.pytest_cache/

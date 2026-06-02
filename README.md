@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="./frontend"><img src="https://img.shields.io/badge/Frontend-Next.js%2016-111827?style=for-the-badge&labelColor=0f172a&color=1f2937" alt="Frontend: Next.js 16" /></a>
-  <a href="./backend"><img src="https://img.shields.io/badge/Backend-Express-1d4ed8?style=for-the-badge&labelColor=1e3a8a&color=3b82f6" alt="Backend: Express" /></a>
+  <a href="./backend"><img src="https://img.shields.io/badge/Backend-FastAPI-059669?style=for-the-badge&labelColor=064e3b&color=10b981" alt="Backend: FastAPI" /></a>
   <a href="./frontend/tsconfig.json"><img src="https://img.shields.io/badge/Language-TypeScript-2563eb?style=for-the-badge&labelColor=1d4ed8&color=60a5fa" alt="Language: TypeScript" /></a>
   <a href="./package.json"><img src="https://img.shields.io/badge/Workspace-Bun%201.3-0284c7?style=for-the-badge&labelColor=0369a1&color=38bdf8" alt="Workspace: Bun" /></a>
 </p>
@@ -20,7 +20,7 @@
 
 LukaScope is an AI-powered blood smear analysis platform designed to help clinicians detect potential leukemia **earlier, faster, and more consistently**.
 As the model is trained on larger and more diverse datasets, the system is expected to improve sensitivity, robustness, and confidence calibration for earlier suspicious-case flagging and clinical review.
-This repository contains both the frontend application and backend API in a Bun workspace monorepo.
+This repository contains a Next.js frontend and a Python FastAPI backend. Bun manages the frontend workspace; Python owns backend API, inference, and training workflows.
 
 ## Table of Contents
 
@@ -52,10 +52,10 @@ This repository contains both the frontend application and backend API in a Bun 
 
 LukaScope currently provides:
 
-- A polished frontend workflow for login, dashboard, analysis simulation, result grid, and detailed result pages.
-- A lightweight backend API service with security middleware and health monitoring endpoint in `backend/src`.
+- A polished frontend workflow for login, dashboard upload, analysis polling, result grid, and detailed result pages.
+- A Python FastAPI backend for upload, analysis jobs, result persistence, clinician review, and health monitoring.
 - A dedicated Python AI training workspace in `backend/ai` for dataset prep, preprocessing, and model training.
-- A clear folder convention where both API and AI layers use `hooks/` and `functions/` for maintainability.
+- File-backed upload, heatmap, reviewed dataset, and model artifact storage.
 - Static sample visual outputs for explainability-oriented UX demonstration.
 
 ## Project Aim
@@ -75,9 +75,9 @@ Deliver a clinician-friendly and explainable AI experience for blood smear analy
 |---|---|---|
 | Frontend pages | Implemented | Login, dashboard, analysis overlay, results list, result detail |
 | Frontend login endpoint | Implemented (MVP) | Static credential check in `frontend/app/api/login/route.ts` |
-| Backend API skeleton | Implemented | Express app, middleware, health route |
-| Domain APIs (auth/upload/results) | Planned | Not implemented yet |
-| Persistent datastore layer | Planned | Not implemented in current cleanup state |
+| Python backend API | Implemented | FastAPI health, upload, job polling, results, review, training-run endpoints |
+| Async analysis | Implemented | Redis/RQ queue support with inline fallback for tests/local development |
+| Persistent datastore layer | Implemented | SQLAlchemy with SQLite local default and Postgres support |
 
 ## AI Datasets and Training Plan
 
@@ -139,7 +139,7 @@ Current AI folder layout:
 - `backend/ai/functions/`: preprocessing and training functions
 - `backend/ai/requirements.txt`: Python training dependencies
 
-This keeps model training logic cleanly separated from the TypeScript backend API.
+The FastAPI backend serves inference outputs while `backend/ai` remains focused on dataset preparation and training scripts.
 
 ## Screenshots
 
@@ -159,10 +159,11 @@ The images below are visual assets used by the current demo UI and explainabilit
 flowchart LR
   A["Clinician / User"] --> B["Next.js Frontend (App Router)"]
   B --> C["UI Workflows (Upload, Results, Explainability)"]
-  B --> D["Backend API (Express)"]
-  D --> E["Health + Middleware Layer"]
-  D --> F["Domain APIs (planned)"]
-  G["Python AI Training Pipeline"] --> H["Model Artifacts"]
+  B --> D["Python FastAPI Backend"]
+  D --> E["Upload, Jobs, Results, Review APIs"]
+  D --> F["Redis/RQ Worker"]
+  F --> G["Python AI Inference + Training Pipeline"]
+  G --> H["Model Artifacts + Heatmaps"]
   H --> D
 ```
 
@@ -178,10 +179,10 @@ flowchart LR
 
 ### Backend
 
-- Node.js + Express + TypeScript
-- CORS + Helmet
-- dotenv configuration
-- Clean API runtime structure in `backend/src` (`config.ts`, `hooks/`, `functions/`, `index.ts`)
+- FastAPI + Python 3.11+
+- SQLAlchemy persistence with SQLite local default and Postgres support
+- Redis/RQ background jobs for inference and retraining
+- File-backed upload, heatmap, dataset, and model artifact storage
 
 ### AI Training
 
@@ -197,14 +198,14 @@ flowchart LR
 
 ### Prerequisites
 
-**Local Development**:
-- Node.js 20+
-- Bun 1.3+
-- Python 3.11+ (for AI training scripts)
-
-**Docker Deployment**:
+**Docker Run**:
 - Docker 20.10+
 - Docker Compose 2.0+
+
+**Local Development Without Docker**:
+- Node.js 20+
+- Bun 1.3+
+- Python 3.11+ (for backend API, workers, and AI training scripts)
 
 ### 1) Clone and enter project
 
@@ -213,66 +214,65 @@ git clone https://github.com/richardwaters9049/LukaScope.git
 cd LukaScope
 ```
 
-### 2) Choose your installation method
+### 2) Run With Docker
 
-#### Option A: Local Development
+This is the recommended path for running the whole app. It does not require Bun, Node.js, Python, Postgres, or Redis to be installed on your host machine.
 
 ```bash
-# Install workspace dependencies
+docker compose -f docker/docker-compose.yml up -d --build
+```
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+This starts the frontend, Python backend, worker, Redis, and Postgres.
+
+### 3) Optional Local Development Without Docker
+
+```bash
+# Install frontend workspace dependencies
 bun install
 
-# Configure backend environment
+# Configure backend environment and install Python API dependencies
 cp backend/.env.example backend/.env
-
-# (Optional) Set up Python AI environment
-cd backend/ai
+cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Option B: Docker Deployment
+Optional AI training environment:
 
 ```bash
-# Configure backend environment
-cp backend/.env.example backend/.env
-
-# Build and start services
-docker-compose -f docker/docker-compose.yml up -d --build
+cd backend/ai
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
-
-No local installation of Node.js, Bun, or Python required when using Docker.
 
 ### Workspace Dependency Model (Bun)
 
-- Install JavaScript/TypeScript dependencies from the repo root only (`bun install`).
-- This monorepo is configured as a Bun workspace, so frontend/backend packages resolve from workspace-managed modules.
-- Avoid running separate dependency installs inside `frontend` or `backend` unless intentionally isolating environments.
-
-### 3) Configure backend environment
-
-```bash
-cp backend/.env.example backend/.env
-```
-
-### 4) (Optional) Set up Python AI environment
-
-```bash
-cd backend/ai
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+- Bun is installed once on the machine, not once per directory.
+- Run `bun install` from the repo root only.
+- Do not run a separate `bun install` inside `frontend/`.
+- Bun manages the frontend workspace dependencies only.
+- Install Python backend dependencies inside `backend/.venv`.
+- Do not add Python backend dependencies to Bun manifests.
 
 ## Running the Project
 
-### Option A: Local Development
+### Option A: Local Development Without Docker
 
 Run each service in its own terminal.
 
 **Terminal A: Backend API**
 
 ```bash
+cd backend
+source .venv/bin/activate
 bun run dev:backend
 ```
 
@@ -287,12 +287,12 @@ bun run dev:frontend
 
 Frontend URL: `http://localhost:3000`
 
-**Terminal C (Optional): Python AI training scaffold**
+**Terminal C: Python worker**
 
 ```bash
-cd backend/ai
+cd backend
 source .venv/bin/activate
-python functions/train_model.py
+python -m app.worker
 ```
 
 ### Option B: Docker Deployment
@@ -312,11 +312,6 @@ docker-compose -f docker/docker-compose.yml down
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:3001`
 
-**AI Training (on-demand)**:
-```bash
-docker-compose -f docker/docker-compose.yml --profile ai up ai-training
-```
-
 ### Option C: Docker Development with Hot Reload
 
 For development with live code reloading:
@@ -327,7 +322,8 @@ docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
 docker-compose -f docker/docker-compose.dev.yml logs -f frontend
-docker-compose -f docker/docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f python-backend
+docker-compose -f docker/docker-compose.dev.yml logs -f worker
 
 # Stop development services
 docker-compose -f docker/docker-compose.dev.yml down
@@ -336,7 +332,8 @@ docker-compose -f docker/docker-compose.dev.yml down
 **Key Development Features**:
 - Volume mounts sync local code changes to containers
 - Frontend uses Next.js dev server with hot reload
-- Backend uses ts-node-dev with auto-restart  
+- Backend uses Uvicorn with auto-reload
+- Worker runs the Redis/RQ queue consumer
 - Changes on host filesystem are reflected immediately
 - No data loss when containers are restarted
 
@@ -349,9 +346,10 @@ docker-compose -f docker/docker-compose.dev.yml down
 | Command | Description |
 |---|---|
 | `bun run dev:frontend` | Start frontend dev server |
-| `bun run dev:backend` | Start backend dev server |
+| `bun run dev:backend` | Start Python backend dev server |
+| `bun run dev:worker` | Start Python analysis/training worker |
 | `bun run build:frontend` | Build frontend |
-| `bun run build:backend` | Build backend |
+| `bun run build:backend` | Compile Python backend |
 | `bun run lint:frontend` | Run frontend lint |
 | `bun run test` | Run all frontend and backend tests |
 | `bun run test:frontend` | Run frontend tests |
@@ -371,11 +369,10 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 - End-to-end tests for critical user journeys in a browser environment
 - Accessibility and regression checks on core pages before release
 
-**Backend Testing (Jest + ts-jest)**:
-- Unit tests for pure functions (`functions/`) and configuration parsing
-- Integration tests for API handlers, middleware behavior, and error contracts
-- Contract tests for response shape and status codes across planned domain routes
-- Smoke tests for `/health` and startup configuration validation in CI
+**Backend Testing (pytest + FastAPI TestClient)**:
+- API tests for health, upload, job polling, result retrieval, review, and training-run creation
+- Unit tests for storage, inference contracts, and reviewed-data retraining eligibility
+- Worker tests for inference and candidate retraining behavior
 
 **AI Training Testing (pytest + pytest-cov)**:
 - Unit tests for data preprocessing functions
@@ -429,8 +426,9 @@ The project includes comprehensive Docker containerization for production deploy
 ### Docker Architecture
 
 - **Frontend Container**: Next.js 16 with Bun runtime (multi-stage build)
-- **Backend Container**: Express.js with Node.js runtime (TypeScript compilation)
-- **AI Training Container** (optional): Python 3.11 with PyTorch and ML dependencies
+- **Backend Container**: FastAPI Python runtime
+- **Worker Container**: Redis/RQ worker for inference and retraining
+- **Postgres/Redis Containers**: Metadata persistence and async queue services
 - **Test Containers**: Dedicated test stages for each service
 
 ### Docker Files
@@ -439,8 +437,8 @@ The project includes comprehensive Docker containerization for production deploy
 - `docker/docker-compose.dev.yml` - Development orchestration with hot reload
 - `docker/docker-compose.test.yml` - Test orchestration for all services
 - `frontend/Dockerfile` - Multi-stage build for Next.js (includes dev stage)
-- `backend/Dockerfile` - Build for Express.js with dev and test stages
-- `backend/ai/Dockerfile` - Python environment with test stage
+- `backend/Dockerfile` - Build for FastAPI backend, worker, and backend tests
+- `backend/ai/Dockerfile` - Python AI training environment
 - `.dockerignore` files - Build context optimization
 
 ### Docker Commands
@@ -467,7 +465,8 @@ docker-compose -f docker/docker-compose.dev.yml up -d --build
 
 # View logs
 docker-compose -f docker/docker-compose.dev.yml logs -f frontend
-docker-compose -f docker/docker-compose.dev.yml logs -f backend
+docker-compose -f docker/docker-compose.dev.yml logs -f python-backend
+docker-compose -f docker/docker-compose.dev.yml logs -f worker
 
 # Stop development services
 docker-compose -f docker/docker-compose.dev.yml down
@@ -578,4 +577,4 @@ Based on [`backend/.env.example`](./backend/.env.example):
 
 ## License
 
-MIT (see [`backend/package.json`](./backend/package.json)).
+MIT.

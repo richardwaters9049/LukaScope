@@ -7,14 +7,14 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://backend:3001
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
     depends_on:
-      - backend
+      - python-backend
     networks:
       - lukascope-network
     restart: unless-stopped
 
-  backend:
+  python-backend:
     build:
       context: ..
       dockerfile: backend/Dockerfile
@@ -22,27 +22,60 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=production
-      - PORT=3001
-      - FRONTEND_URL=http://frontend:3000
+      - FRONTEND_URL=http://localhost:3000
+      - DATABASE_URL=postgresql+psycopg2://lukascope:lukascope@postgres:5432/lukascope
+      - REDIS_URL=redis://redis:6379/0
+      - STORAGE_ROOT=/app/data/storage
+    volumes:
+      - backend_assets:/app/data
+    depends_on:
+      - postgres
+      - redis
     networks:
       - lukascope-network
     restart: unless-stopped
 
-  # AI Training service (commented out by default - run on-demand)
-  # ai-training:
-  #   build:
-  #     context: ../backend/ai
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ../backend/ai:/app
-  #     - ../data:/app/data
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #   networks:
-  #     - lukascope-network
-  #   profiles:
-  #     - ai  # Use: docker-compose --profile ai up ai-training
+  worker:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    command: ["python", "-m", "app.worker"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql+psycopg2://lukascope:lukascope@postgres:5432/lukascope
+      - REDIS_URL=redis://redis:6379/0
+      - STORAGE_ROOT=/app/data/storage
+    volumes:
+      - backend_assets:/app/data
+    depends_on:
+      - python-backend
+      - redis
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=lukascope
+      - POSTGRES_USER=lukascope
+      - POSTGRES_PASSWORD=lukascope
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lukascope-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - lukascope-network
+    restart: unless-stopped
 
 networks:
   lukascope-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  backend_assets:

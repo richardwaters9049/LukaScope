@@ -14,10 +14,12 @@ import { motion } from "framer-motion";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import AnalysisOverlay from "@/components/overlay";
 import Image from "next/image";
+import { uploadSample } from "@/lib/api";
 
 export default function DashboardPage() {
     const router = useRouter();
     const [analysing, setAnalysing] = useState(false);
+    const [jobId, setJobId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState("");
 
@@ -26,7 +28,7 @@ export default function DashboardPage() {
         return /\.(jpe?g|png|tiff?)$/i.test(f.name);
     };
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
         if (!file) {
             setError("Please choose a sample file before submitting.");
             return;
@@ -38,7 +40,19 @@ export default function DashboardPage() {
         }
 
         setError("");
-        setAnalysing(true);
+        setJobId(null);
+
+        try {
+            const created = await uploadSample(file);
+            setJobId(created.job_id);
+            setAnalysing(true);
+            if (created.status === "completed" && created.result_id) {
+                router.push(`/results/${created.result_id}`);
+            }
+        } catch (uploadError) {
+            setError(uploadError instanceof Error ? uploadError.message : "Upload failed. Please try again.");
+            setAnalysing(false);
+        }
     };
 
     return (
@@ -109,6 +123,7 @@ export default function DashboardPage() {
                                 onChange={(e) => {
                                     const selected = e.target.files?.[0] ?? null;
                                     setFile(selected);
+                                    setJobId(null);
                                     setError("");
                                 }}
                             />
@@ -174,7 +189,15 @@ export default function DashboardPage() {
                 </div>
             </section>
 
-            <AnalysisOverlay open={analysing} onComplete={() => router.push("/results/1")} />
+            <AnalysisOverlay
+                open={analysing}
+                jobId={jobId}
+                onComplete={(resultId) => router.push(`/results/${resultId}`)}
+                onError={(message) => {
+                    setAnalysing(false);
+                    setError(message);
+                }}
+            />
         </div>
     );
 }
