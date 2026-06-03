@@ -110,7 +110,7 @@ export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Pr
                             {/* IMAGE */}
                             <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-white/10 bg-black/40">
                                 <Image
-                                    src="/images/sample_2N.png"
+                                    src="/images/sample_2N_detected.png"
                                     alt="Sample"
                                     fill
                                     sizes="(min-width: 768px) 50vw, 100vw"

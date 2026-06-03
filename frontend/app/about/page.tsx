@@ -1,7 +1,6 @@
 "use client";
 
 import Nav from "@/components/ui/nav";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
     Microscope,
@@ -48,12 +47,6 @@ export default function AboutPage() {
                             leukaemia earlier, faster, and more consistently.
                         </p>
                     </div>
-                    <Link
-                        href="/dashboard"
-                        className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
-                    >
-                        &larr; Back to Dashboard
-                    </Link>
                 </motion.header>
 
                 {/* What is LukaScope — hero cards */}

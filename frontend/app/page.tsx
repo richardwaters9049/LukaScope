@@ -12,8 +12,8 @@ import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 export default function Home() {
   const router = useRouter()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState<string>(DEMO_CREDENTIALS.email)
+  const [password, setPassword] = useState<string>(DEMO_CREDENTIALS.password)
   const [error, setError] = useState("")
 
   const handleLogin = async () => {

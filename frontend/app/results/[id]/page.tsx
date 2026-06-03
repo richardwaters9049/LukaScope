@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Nav from "@/components/ui/nav";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, HomeIcon, XCircleIcon } from "@heroicons/react/24/outline";
@@ -16,6 +16,12 @@ import {
     type ResultSummary,
 } from "@/lib/api";
 import { demoResults, getDemoResult, getResultNeighbors, isDemoResult } from "@/lib/demo-results";
+import { formatDisplayDate } from "@/lib/format-date";
+
+type ToastMessage = {
+    title: string;
+    body: string;
+};
 
 export default function ResultsDetailPage() {
     const params = useParams<{ id: string }>();
@@ -24,11 +30,21 @@ export default function ResultsDetailPage() {
     const [result, setResult] = useState<ResultSummary | null>(() => demoResult ?? null);
     const [loading, setLoading] = useState(() => !demoResult);
     const [error, setError] = useState("");
-    const [reviewMessage, setReviewMessage] = useState("");
+    const [toast, setToast] = useState<ToastMessage | null>(null);
+    const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [liveResults, setLiveResults] = useState<ResultSummary[]>([]);
-    const activeResult = demoResult ?? result;
+    const activeResult = result ?? demoResult;
     const navigationResults = demoResult ? demoResults : liveResults;
     const { previous, next } = getResultNeighbors(navigationResults, activeResult?.id ?? "");
+
+    const showToast = (message: ToastMessage) => {
+        if (toastTimeout.current) {
+            clearTimeout(toastTimeout.current);
+        }
+
+        setToast(message);
+        toastTimeout.current = setTimeout(() => setToast(null), 3200);
+    };
 
     useEffect(() => {
         if (!id) return;
@@ -68,12 +84,22 @@ export default function ResultsDetailPage() {
         };
     }, [demoResult]);
 
+    useEffect(() => {
+        return () => {
+            if (toastTimeout.current) {
+                clearTimeout(toastTimeout.current);
+            }
+        };
+    }, []);
+
     const approveForTraining = async () => {
         if (!activeResult) return;
-        setReviewMessage("");
         if (isDemoResult(activeResult.id)) {
             setResult({ ...activeResult, review_status: "approved" });
-            setReviewMessage("Demo sample marked as approved for presentation.");
+            showToast({
+                title: "Approved for retraining",
+                body: "Demo sample marked as approved for presentation.",
+            });
             return;
         }
 
@@ -85,9 +111,15 @@ export default function ResultsDetailPage() {
             });
             const refreshed = await fetchResult(activeResult.id);
             setResult(refreshed);
-            setReviewMessage("Approved for reviewed retraining dataset.");
+            showToast({
+                title: "Approved for retraining",
+                body: "Approved for reviewed retraining dataset.",
+            });
         } catch (reviewError) {
-            setReviewMessage(reviewError instanceof Error ? reviewError.message : "Unable to submit review.");
+            showToast({
+                title: "Review failed",
+                body: reviewError instanceof Error ? reviewError.message : "Unable to submit review.",
+            });
         }
     };
 
@@ -165,7 +197,7 @@ export default function ResultsDetailPage() {
                             <div className="space-y-3 text-sm text-slate-300">
                                 <p><span className="font-medium text-white">ID:</span> {activeResult.sample_id}</p>
                                 <p><span className="font-medium text-white">Uploaded by:</span> {activeResult.uploaded_by}</p>
-                                <p><span className="font-medium text-white">Date:</span> {new Date(activeResult.created_at).toLocaleString()}</p>
+                                <p><span className="font-medium text-white">Date:</span> {formatDisplayDate(activeResult.created_at)}</p>
                                 <p><span className="font-medium text-white">AI Model:</span> {activeResult.model_version}</p>
                                 <p><span className="font-medium text-white">Review:</span> {displayClassification(activeResult.review_status)}</p>
                             </div>
@@ -184,7 +216,6 @@ export default function ResultsDetailPage() {
                             >
                                 {activeResult.review_status === "approved" ? "Approved" : "Approve for retraining"}
                             </button>
-                            {reviewMessage && <p className="mt-3 text-sm text-slate-200">{reviewMessage}</p>}
                         </div>
                     </div>
 
@@ -225,9 +256,10 @@ export default function ResultsDetailPage() {
                     <div className="flex flex-col gap-3 lg:col-span-3 md:flex-row md:items-center md:justify-between">
                         <Link
                             href={previous ? `/results/${previous.id}` : "/results"}
-                            className="inline-flex items-center justify-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
                         >
-                            ← {previous ? "Previous Result" : "Back to Results"}
+                            <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="whitespace-nowrap">{previous ? "Previous Result" : "Back to Results"}</span>
                         </Link>
                         <Link
                             href="/results"
@@ -257,6 +289,28 @@ export default function ResultsDetailPage() {
                 </div>
 
             </motion.section>
+
+            <AnimatePresence>
+                {toast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        className="fixed bottom-6 right-6 z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-white/10 bg-slate-950/95 p-4 text-white shadow-2xl shadow-slate-950/60 backdrop-blur"
+                    >
+                        <div className="flex gap-3">
+                            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-400/10">
+                                <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-semibold text-white">{toast.title}</p>
+                                <p className="text-sm leading-5 text-slate-300">{toast.body}</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
