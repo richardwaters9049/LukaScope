@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
 import { pageVariants, itemVariants } from "@/lib/animations";
 import { Bell, CheckCircle2, KeyRound, Save, ShieldCheck, X } from "lucide-react";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 type ToastMessage = {
     title: string;
@@ -46,6 +47,16 @@ export default function ProfilePage() {
                         <p className="text-slate-300">
                             Manage your account details, preferences, and security settings.
                         </p>
+                    </div>
+                    <div className="hidden md:flex flex-1 justify-end">
+                        <Link
+                            href="/dashboard"
+                            aria-label="Back to dashboard"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
+                        >
+                            <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="flex flex-col whitespace-nowrap sm:inline items-center gap-2"> Back to Dashboard</span>
+                        </Link>
                     </div>
                 </motion.header>
 
@@ -169,12 +180,12 @@ export default function ProfilePage() {
                                         25 Mar 2026 · Chrome · London, UK
                                     </span>
                                 </p>
-                                <div className="grid gap-3 pt-2 [grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))]">
+                                <div className="grid grid-cols-1 gap-3 pt-2 lg:grid-cols-2">
                                     <Button
                                         type="button"
                                         size="sm"
                                         variant="outline"
-                                        className="h-9 min-w-0 w-full gap-2 whitespace-nowrap px-3 border-amber-300/30 bg-amber-400/10 text-amber-100 hover:bg-amber-400/20 hover:text-white"
+                                        className="h-auto min-w-0 w-full whitespace-normal px-3 py-2 text-center leading-snug border-amber-300/30 bg-amber-400/10 text-amber-100 hover:bg-amber-400/20 hover:text-white"
                                         onClick={() => showToast({
                                             title: "Password flow opened",
                                             body: "A secure password update modal would open here.",
@@ -187,7 +198,7 @@ export default function ProfilePage() {
                                         type="button"
                                         size="sm"
                                         variant="ghost"
-                                        className="h-9 min-w-0 w-full gap-2 whitespace-nowrap px-3 border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
+                                        className="h-auto min-w-0 w-full whitespace-normal px-3 py-2 text-center leading-snug border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
                                         onClick={() => showToast({
                                             title: "Sessions checked",
                                             body: "Active device sessions are ready for review.",

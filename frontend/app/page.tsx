@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import LogoImg from "@/public/images/lukascope-logo.png"
-import { DEMO_CREDENTIALS, getDisplayNameFromEmail } from "@/lib/auth"
+import { getDisplayNameFromEmail } from "@/lib/auth"
 import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 
 export default function Home() {

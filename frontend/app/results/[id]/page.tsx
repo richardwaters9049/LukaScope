@@ -6,7 +6,7 @@ import Nav from "@/components/ui/nav";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, HomeIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import {
     backendAssetUrl,
     displayClassification,
@@ -267,16 +267,23 @@ export default function ResultsDetailPage() {
                         >
                             All Results
                         </Link>
-                        {next && (
-                            <Link
-                                href={`/results/${next.id}`}
-                                aria-label="Next result"
-                                className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
-                            >
-                                <span className="hidden whitespace-nowrap sm:inline">Next Result</span>
-                                <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
-                            </Link>
-                        )}
+                        <Link
+                            href={next ? `/results/${next.id}` : "/dashboard"}
+                            aria-label={next ? "Next result" : "Back to dashboard"}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
+                        >
+                            {next ? (
+                                <>
+                                    <span className="hidden whitespace-nowrap sm:inline">Next Result</span>
+                                    <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
+                                </>
+                            ) : (
+                                <>
+                                    <HomeIcon className="h-5 w-5" aria-hidden="true" />
+                                    <span className="hidden whitespace-nowrap sm:inline">Back To Dashboard</span>
+                                </>
+                            )}
+                        </Link>
                     </div>
 
                 </div>

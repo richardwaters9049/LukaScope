@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Navigation from "@/components/ui/nav";
+import { HomeIcon } from "@heroicons/react/24/outline";
 import {
     Pagination,
     PaginationContent,
@@ -80,6 +81,16 @@ export default function GridLayout() {
                     <h1 className="text-center text-4xl font-semibold tracking-tight text-white md:text-5xl">
                         Sample Analysis Results
                     </h1>
+                    <div className="flex flex-1 justify-end">
+                        <Link
+                            href="/dashboard"
+                            aria-label="Back to dashboard"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
+                        >
+                            <HomeIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="hidden whitespace-nowrap sm:inline">Back to Dashboard</span>
+                        </Link>
+                    </div>
                 </div>
 
                 <p className="text-center text-lg text-slate-300 md:text-2xl">
