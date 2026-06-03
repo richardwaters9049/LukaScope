@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-import { Activity, Brain, Database, Microscope, ScanLine, ShieldCheck } from "lucide-react";
+import { Activity, Brain, Database, Download, Microscope, ScanLine, ShieldCheck } from "lucide-react";
 import AnalysisOverlay from "@/components/overlay";
 import Image from "next/image";
 import { uploadSample } from "@/lib/api";
@@ -277,6 +277,16 @@ export default function DashboardPage() {
                                     <div className="space-y-2 text-slate-100">
                                         <p className="text-base font-medium">Need a quick test image?</p>
                                         <p className="text-sm text-slate-200">Use this bundled demo smear to try the analysis flow instantly.</p>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className="mt-2 bg-white text-slate-950 hover:bg-slate-200"
+                                        >
+                                            <a href="/images/sample_1P.png" download="lukascope-demo-smear.png">
+                                                <Download className="h-4 w-4" />
+                                                Download demo smear
+                                            </a>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
