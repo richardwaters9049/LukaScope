@@ -41,6 +41,10 @@ export default function Navigation() {
 
     const menuItems = (
         <>
+            <Link href="/dashboard" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
+                Home
+            </Link>
+
             <Link href="/about" onClick={() => setOpen(false)} className="hover:underline cursor-pointer underline-offset-4">
                 About
             </Link>

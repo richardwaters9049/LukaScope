@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import LogoImg from "@/public/images/lukascope-logo.png"
-import { getDisplayNameFromEmail } from "@/lib/auth"
+import { DEMO_CREDENTIALS, getDisplayNameFromEmail } from "@/lib/auth"
 import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 
 export default function Home() {
   const router = useRouter()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState<string>(DEMO_CREDENTIALS.email)
+  const [password, setPassword] = useState<string>(DEMO_CREDENTIALS.password)
   const [error, setError] = useState("")
 
   const handleLogin = async () => {

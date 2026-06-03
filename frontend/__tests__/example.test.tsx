@@ -22,6 +22,7 @@ jest.mock('framer-motion', () => {
 })
 
 import Home from '../app/page'
+import { DEMO_CREDENTIALS } from '../lib/auth'
 
 describe('Home (login page)', () => {
   it('renders the LukaScope heading', () => {
@@ -42,11 +43,11 @@ describe('Home (login page)', () => {
     expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument()
   })
 
-  it('does not pre-fill the email and password fields', () => {
+  it('pre-fills the email and password fields for the demo login', () => {
     render(<Home />)
     const emailInput = screen.getByPlaceholderText('Email address') as HTMLInputElement
     const passwordInput = screen.getByPlaceholderText('Password') as HTMLInputElement
-    expect(emailInput.value).toBe('')
-    expect(passwordInput.value).toBe('')
+    expect(emailInput.value).toBe(DEMO_CREDENTIALS.email)
+    expect(passwordInput.value).toBe(DEMO_CREDENTIALS.password)
   })
 })

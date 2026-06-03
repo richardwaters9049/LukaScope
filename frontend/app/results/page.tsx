@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Navigation from "@/components/ui/nav";
-import { HomeIcon } from "@heroicons/react/24/outline";
 import {
     Pagination,
     PaginationContent,
@@ -17,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { backendAssetUrl, displayClassification, fetchResults, type ResultSummary } from "@/lib/api";
 import { demoResults } from "@/lib/demo-results";
+import { formatDisplayDate } from "@/lib/format-date";
 
 const PAGE_SIZE = 3;
 
@@ -49,6 +49,19 @@ export default function GridLayout() {
         };
     }, []);
 
+    useEffect(() => {
+        if (loading || results.length === 0) return;
+
+        const scrollTimer = window.setTimeout(() => {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: "smooth",
+            });
+        }, 2000);
+
+        return () => window.clearTimeout(scrollTimer);
+    }, [loading, results.length]);
+
     const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
     const startIndex = (page - 1) * PAGE_SIZE;
     const paginatedItems = results.slice(startIndex, startIndex + PAGE_SIZE);
@@ -63,21 +76,10 @@ export default function GridLayout() {
                 transition={{ duration: 0.3, delay: 0.05 }}
                 className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-4 py-10 md:px-8"
             >
-                <div className="flex w-full flex-col items-center gap-4 md:flex-row md:justify-between">
-                    <div className="flex-1" />
+                <div className="flex w-full flex-col items-center gap-4">
                     <h1 className="text-center text-4xl font-semibold tracking-tight text-white md:text-5xl">
                         Sample Analysis Results
                     </h1>
-                    <div className="flex flex-1 justify-end">
-                        <Link
-                            href="/dashboard"
-                            aria-label="Back to dashboard"
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
-                        >
-                            <HomeIcon className="h-5 w-5" aria-hidden="true" />
-                            <span className="hidden whitespace-nowrap sm:inline">Back to Dashboard</span>
-                        </Link>
-                    </div>
                 </div>
 
                 <p className="text-center text-lg text-slate-300 md:text-2xl">
@@ -112,7 +114,7 @@ export default function GridLayout() {
                 </div>
             )}
 
-            <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 px-4 pb-8 sm:grid-cols-2 lg:grid-cols-3 md:px-8">
+            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 px-4 pb-8 sm:grid-cols-2 lg:grid-cols-3 md:px-8">
                 {paginatedItems.map((item, index) => {
                     const isPositive = item.classification === "positive" || item.classification === "suspicious";
 
@@ -139,8 +141,8 @@ export default function GridLayout() {
 
                                     {/* Content */}
                                     <CardContent className="flex flex-col gap-2 p-4">
-                                        <div className="flex justify-between text-sm text-white">
-                                            <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                                        <div className="flex flex-col gap-1 text-sm text-white">
+                                            <span>{formatDisplayDate(item.created_at)}</span>
                                             <span>Sample ID: {item.sample_id.slice(0, 8)}</span>
                                         </div>
 

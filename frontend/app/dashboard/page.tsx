@@ -266,7 +266,7 @@ export default function DashboardPage() {
                                 <div className="mt-4 flex items-center gap-5">
                                     <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-md border border-white/10 bg-black/30">
                                         <Image
-                                            src="/images/sample_1P.png"
+                                            src="/images/sample_1P_detected.png"
                                             alt="Sample smear preview"
                                             fill
                                             sizes="128px"
