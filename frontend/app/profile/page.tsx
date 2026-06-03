@@ -5,11 +5,9 @@ import Nav from "@/components/ui/nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { pageVariants, itemVariants } from "@/lib/animations";
 import { Bell, CheckCircle2, KeyRound, Save, ShieldCheck, X } from "lucide-react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 type ToastMessage = {
     title: string;
@@ -48,16 +46,6 @@ export default function ProfilePage() {
                         <p className="text-slate-300">
                             Manage your account details, preferences, and security settings.
                         </p>
-                    </div>
-                    <div className="hidden md:flex flex-1 justify-end">
-                        <Link
-                            href="/dashboard"
-                            aria-label="Back to dashboard"
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:w-auto sm:gap-2 sm:px-4 sm:py-2"
-                        >
-                            <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
-                            <span className="flex flex-col whitespace-nowrap sm:inline items-center gap-2"> Back to Dashboard</span>
-                        </Link>
                     </div>
                 </motion.header>
 
