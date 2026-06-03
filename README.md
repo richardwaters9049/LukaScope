@@ -5,10 +5,6 @@
 </p>
 
 <p align="center">
-  <img src="/frontend/public/images/lukascope-logo.png"alt="LukaScope Logo" width="120" />
-</p>
-
-<p align="center">
   <a href="./frontend"><img src="https://img.shields.io/badge/Frontend-Next.js%2016-111827?style=for-the-badge&labelColor=0f172a&color=1f2937" alt="Frontend: Next.js 16" /></a>
   <a href="./backend"><img src="https://img.shields.io/badge/Backend-FastAPI-059669?style=for-the-badge&labelColor=064e3b&color=10b981" alt="Backend: FastAPI" /></a>
   <a href="./frontend/tsconfig.json"><img src="https://img.shields.io/badge/Language-TypeScript-2563eb?style=for-the-badge&labelColor=1d4ed8&color=60a5fa" alt="Language: TypeScript" /></a>
