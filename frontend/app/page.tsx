@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import LogoImg from "@/public/images/lukascope-logo.png"
+import LogoImg from "@/public/images/lukascope-logo-v2.png"
 import { DEMO_CREDENTIALS, getDisplayNameFromEmail } from "@/lib/auth"
 import { prefetchAuthenticatedRoutes } from "@/lib/prefetch-routes"
 

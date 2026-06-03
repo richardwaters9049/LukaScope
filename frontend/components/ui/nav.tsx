@@ -72,7 +72,7 @@ export default function Navigation() {
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard">
                         <Image
-                            src="/images/lukascope-logo.png"
+                            src="/images/lukascope-logo-v2.png"
                             alt="LukaScope Logo"
                             width={50}
                             height={50}
