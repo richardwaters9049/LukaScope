@@ -5,6 +5,7 @@ import Nav from "@/components/ui/nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { pageVariants, itemVariants } from "@/lib/animations";
 import { Bell, CheckCircle2, KeyRound, Save, ShieldCheck, X } from "lucide-react";
