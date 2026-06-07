@@ -18,6 +18,18 @@ COPY backend/package.json ./backend/
 RUN npm install -g bun@1.3.1
 RUN bun install --frozen-lockfile
 
+FROM deps AS dev
+WORKDIR /app
+
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+ENV TS_NODE_DEV_USE_POLLING=true
+ENV TSC_WATCHFILE=DynamicPriorityPolling
+
+EXPOSE 3001
+
+CMD ["bun", "run", "dev:backend"]
+
 # Builder stage
 FROM base AS builder
 WORKDIR /app

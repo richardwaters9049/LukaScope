@@ -1,13 +1,25 @@
 services:
   frontend:
+    image: lukascope-frontend-dev
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: dev
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://backend:3001
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - WATCHPACK_POLLING=true
+      - WATCHPACK_POLLING_INTERVAL=1000
+      - TSC_WATCHFILE=DynamicPriorityPolling
+    command: bun run --cwd frontend dev --webpack --hostname 0.0.0.0
+    volumes:
+      - .:/app
+      - root_node_modules:/app/node_modules
+      - frontend_node_modules:/app/frontend/node_modules
     depends_on:
       - backend
     networks:
@@ -15,15 +27,26 @@ services:
     restart: unless-stopped
 
   backend:
+    image: lukascope-backend-dev
     build:
       context: .
       dockerfile: backend/Dockerfile
+      target: dev
     ports:
       - "3001:3001"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3001
-      - FRONTEND_URL=http://frontend:3000
+      - FRONTEND_URL=http://localhost:3000
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - TS_NODE_DEV_USE_POLLING=true
+      - TSC_WATCHFILE=DynamicPriorityPolling
+    command: bun run dev:backend
+    volumes:
+      - .:/app
+      - root_node_modules:/app/node_modules
+      - backend_node_modules:/app/backend/node_modules
     networks:
       - lukascope-network
     restart: unless-stopped
@@ -46,3 +69,8 @@ services:
 networks:
   lukascope-network:
     driver: bridge
+
+volumes:
+  frontend_node_modules:
+  backend_node_modules:
+  root_node_modules:
