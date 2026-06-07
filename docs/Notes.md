@@ -1,5 +1,18 @@
 # Development Notes
 
+## 7 June 2026
+
+### Verification & Test Runner Update
+
+Validated the current project state after the latest branch synchronization work:
+
+1. **Frontend tests** — Fixed the Docker frontend test stage by installing Node and running Jest through Node; Docker verification passed with `4` suites and `23` tests.
+2. **Backend API tests** — Ran the Docker backend test service successfully; `6 passed`.
+3. **AI training tests** — Fixed the AI image package list and test compose command; Docker verification passed with `7 passed`.
+4. **Branch hygiene** — Confirmed local tracking branches are aligned with their remotes after pushing the backend proxy and container development updates.
+
+---
+
 ## 28 May 2026
 
 ### Backend Technical Debt — Audit & Remediation

@@ -165,6 +165,7 @@ Testing infrastructure has been implemented with test frameworks and Docker inte
 - **Framework**: Jest + React Testing Library
 - **Configuration**: `frontend/jest.config.js`, `frontend/jest.setup.js`
 - **Test Location**: `frontend/__tests__/`
+- **Runtime**: Frontend test scripts invoke Jest through Node; the frontend Docker test stage installs Node because the Bun Alpine image does not include it by default.
 - **Scripts**:
   - `bun run test` - Run tests
   - `bun run test:watch` - Watch mode
