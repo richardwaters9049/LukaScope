@@ -80,7 +80,7 @@ Docker test stages run Jest/React Testing Library for the frontend and pytest fo
 Frontend:
 
 ```yaml
-NEXT_PUBLIC_API_URL: http://localhost:3001
+BACKEND_API_URL: http://python-backend:3001
 ```
 
 Backend and worker:
@@ -92,4 +92,4 @@ STORAGE_ROOT: /app/data/storage
 FRONTEND_URL: http://localhost:3000
 ```
 
-Use a public backend origin for `NEXT_PUBLIC_API_URL` when deploying outside local Docker.
+Use `BACKEND_API_URL` for the backend origin the Next.js server can reach when deploying outside local Docker.

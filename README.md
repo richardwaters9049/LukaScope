@@ -169,7 +169,7 @@ The images below are visual assets used by the current demo UI and explainabilit
 
 | Preview                                                                                                           | Description                                                                            |
 | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| <img src="/frontend/public/images/lukascope-logo.png" alt="LukaScope branding logo" width="220" />                | **Branding logo** used in the login/dashboard navigation context.                      |
+| <img src="/frontend/public/images/lukascope-logo-v2.png" alt="LukaScope branding logo" width="220" />             | **Branding logo** used in the login/dashboard navigation context.                      |
 | <img src="./frontend/public/images/sample_1P.png" alt="Example blood smear sample result" width="220" />          | **Example blood smear sample** shown in results cards and detail views.                |
 | <img src="./frontend/public/images/shap_heatmap.png" alt="SHAP explainability heatmap" width="220" />             | **SHAP explainability heatmap** highlighting influential regions for model prediction. |
 | <img src="./frontend/public/images/gradient_heatmap.png" alt="Gradient explainability heatmap" width="220" />     | **Gradient-based explainability map** showing model attention across the image.        |

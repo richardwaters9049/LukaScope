@@ -41,11 +41,11 @@ export type ReviewPayload = {
   notes?: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL = "/backend-api";
 
 export function backendAssetUrl(path: string) {
   if (/^https?:\/\//.test(path)) return path;
-  if (path.startsWith("/assets/")) return `${API_URL}${path}`;
+  if (path.startsWith("/assets/")) return path.replace(/^\/assets/, "/backend-assets");
   return path;
 }
 

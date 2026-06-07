@@ -16,7 +16,7 @@ describe('backend API client', () => {
   })
 
   it('builds backend asset URLs', () => {
-    expect(backendAssetUrl('/assets/uploads/sample.png')).toBe('http://localhost:3001/assets/uploads/sample.png')
+    expect(backendAssetUrl('/assets/uploads/sample.png')).toBe('/backend-assets/uploads/sample.png')
     expect(backendAssetUrl('https://example.com/sample.png')).toBe('https://example.com/sample.png')
   })
 
@@ -36,7 +36,7 @@ describe('backend API client', () => {
 
     expect(response.job_id).toBe('job-1')
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3001/api/samples',
+      '/backend-api/api/samples',
       expect.objectContaining({ method: 'POST', body: expect.any(FormData) }),
     )
   })
@@ -54,17 +54,17 @@ describe('backend API client', () => {
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      'http://localhost:3001/api/analysis-jobs/job-1',
+      '/backend-api/api/analysis-jobs/job-1',
       expect.any(Object),
     )
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      'http://localhost:3001/api/results',
+      '/backend-api/api/results',
       expect.any(Object),
     )
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
-      'http://localhost:3001/api/results/result-1',
+      '/backend-api/api/results/result-1',
       expect.any(Object),
     )
   })

@@ -418,7 +418,7 @@ Set these in `docker/docker-compose.yml` or environment files:
 
 **Frontend**:
 - `NODE_ENV` - Environment (production/development)
-- `NEXT_PUBLIC_API_URL` - Backend API URL
+- `BACKEND_API_URL` - Backend origin reachable by the Next.js server proxy
 
 **Backend**:
 - `NODE_ENV` - Environment (production/development)

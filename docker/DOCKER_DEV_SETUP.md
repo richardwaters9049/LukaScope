@@ -35,6 +35,6 @@ docker compose -f docker/docker-compose.dev.yml down
 
 ## Notes
 
-- Browser code should use `NEXT_PUBLIC_API_URL=http://localhost:3001` for local Docker because Docker service names are not resolvable from the host browser.
+- Browser code uses the Next.js `/backend-api` proxy. In Docker, set `BACKEND_API_URL=http://python-backend:3001` so the Next.js server can reach the backend service.
 - Backend CORS should use `FRONTEND_URL=http://localhost:3000` for local Docker.
 - Use `docker/docker-compose.yml` for production-like builds and `docker/docker-compose.test.yml` for isolated test containers.
