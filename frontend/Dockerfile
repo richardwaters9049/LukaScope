@@ -45,6 +45,8 @@ RUN bun run build
 FROM base AS test
 WORKDIR /app
 
+RUN apk add --no-cache nodejs
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 

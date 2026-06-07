@@ -395,6 +395,7 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 - Integration tests for key flows: login, dashboard interactions, analysis state transitions, and results rendering
 - End-to-end tests for critical user journeys in a browser environment
 - Accessibility and regression checks on core pages before release
+- Jest runs through Node; the frontend Docker test stage installs Node because the Bun Alpine image does not include it by default.
 
 **Backend Testing (pytest + FastAPI TestClient)**:
 
@@ -408,6 +409,7 @@ Testing infrastructure has been implemented with frameworks and Docker integrati
 - Integration tests for model training pipeline
 - Validation tests for model outputs and metrics
 - Data integrity tests for dataset loading
+- The Docker AI test service runs `pytest` explicitly rather than the training image's default command.
 
 ### Running Tests
 

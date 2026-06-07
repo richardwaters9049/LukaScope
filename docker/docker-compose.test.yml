@@ -38,6 +38,7 @@ services:
     build:
       context: ../backend/ai
       dockerfile: Dockerfile
+    command: ["pytest"]
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
