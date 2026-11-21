@@ -1,7 +1,9 @@
+from io import BytesIO
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
+from PIL import Image, UnidentifiedImageError
 
 from app.config import Settings, get_settings
 
@@ -33,6 +35,10 @@ async def save_upload(file: UploadFile, settings: Settings | None = None) -> Pat
         raise HTTPException(status_code=400, detail="Uploaded image is empty.")
     if len(data) > settings.max_upload_bytes:
         raise HTTPException(status_code=413, detail="Uploaded image exceeds the 10MB limit.")
+    try:
+        Image.open(BytesIO(data)).verify()
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail="Uploaded file is not a valid image.") from exc
     path = settings.storage_root / "uploads" / f"{uuid4()}{suffix}"
     path.write_bytes(data)
     return path

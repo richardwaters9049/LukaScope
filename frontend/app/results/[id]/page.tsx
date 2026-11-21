@@ -9,11 +9,14 @@ import Link from "next/link";
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import {
     backendAssetUrl,
+    createTrainingRun,
     displayClassification,
     fetchResult,
     fetchResults,
+    fetchTrainingRun,
     submitReview,
     type ResultSummary,
+    type TrainingRun,
 } from "@/lib/api";
 import { demoResults, getDemoResult, getResultNeighbors, isDemoResult } from "@/lib/demo-results";
 import { formatDisplayDate } from "@/lib/format-date";
@@ -33,6 +36,8 @@ export default function ResultsDetailPage() {
     const [toast, setToast] = useState<ToastMessage | null>(null);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [liveResults, setLiveResults] = useState<ResultSummary[]>([]);
+    const [trainingRun, setTrainingRun] = useState<TrainingRun | null>(null);
+    const [trainingError, setTrainingError] = useState("");
     const activeResult = result ?? demoResult;
     const navigationResults = demoResult ? demoResults : liveResults;
     const { previous, next } = getResultNeighbors(navigationResults, activeResult?.id ?? "");
@@ -92,10 +97,40 @@ export default function ResultsDetailPage() {
         };
     }, []);
 
+    useEffect(() => {
+        if (!trainingRun || ["completed", "failed"].includes(trainingRun.status)) return;
+
+        let cancelled = false;
+        const timer = setTimeout(async () => {
+            try {
+                const refreshed = await fetchTrainingRun(trainingRun.id);
+                if (!cancelled) setTrainingRun(refreshed);
+            } catch (err) {
+                if (!cancelled) {
+                    setTrainingError(err instanceof Error ? err.message : "Unable to refresh retraining status.");
+                }
+            }
+        }, 1200);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    }, [trainingRun]);
+
     const approveForTraining = async () => {
         if (!activeResult) return;
         if (isDemoResult(activeResult.id)) {
             setResult({ ...activeResult, review_status: "approved" });
+            setTrainingRun({
+                id: "demo-training-run",
+                status: "completed",
+                candidate_model_version: "candidate-demo",
+                approved_sample_count: 1,
+                metrics: { requires_clinical_validation: true },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            });
             showToast({
                 title: "Approved for retraining",
                 body: "Demo sample marked as approved for presentation.",
@@ -111,6 +146,14 @@ export default function ResultsDetailPage() {
             });
             const refreshed = await fetchResult(activeResult.id);
             setResult(refreshed);
+            try {
+                const createdTrainingRun = await createTrainingRun();
+                const nextTrainingRun = await fetchTrainingRun(createdTrainingRun.training_run_id);
+                setTrainingRun(nextTrainingRun);
+                setTrainingError("");
+            } catch (trainingRunError) {
+                setTrainingError(trainingRunError instanceof Error ? trainingRunError.message : "Unable to start retraining.");
+            }
             showToast({
                 title: "Approved for retraining",
                 body: "Approved for reviewed retraining dataset.",
@@ -208,6 +251,15 @@ export default function ResultsDetailPage() {
                             <p className="text-sm text-slate-200">
                                 Only clinician-approved labels are eligible for retraining.
                             </p>
+                            <div className="mt-4 rounded-md border border-white/10 bg-slate-950/60 p-3">
+                                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Current status</p>
+                                <p className="mt-1 text-base font-semibold text-white">{displayClassification(activeResult.review_status)}</p>
+                                {activeResult.review_status === "approved" && (
+                                    <p className="mt-2 text-sm text-emerald-300">
+                                        This sample is part of the reviewed training dataset.
+                                    </p>
+                                )}
+                            </div>
                             <button
                                 type="button"
                                 onClick={approveForTraining}
@@ -216,6 +268,27 @@ export default function ResultsDetailPage() {
                             >
                                 {activeResult.review_status === "approved" ? "Approved" : "Approve for retraining"}
                             </button>
+                        </div>
+
+                        <div className="rounded-lg border border-white/10 bg-slate-900/70 p-5 text-white">
+                            <h2 className="py-2 text-2xl font-semibold text-white">Retraining Status</h2>
+                            {trainingRun ? (
+                                <div className="space-y-3 text-sm text-slate-300">
+                                    <p><span className="font-medium text-white">Status:</span> {displayClassification(trainingRun.status)}</p>
+                                    <p><span className="font-medium text-white">Approved samples:</span> {trainingRun.approved_sample_count}</p>
+                                    <p><span className="font-medium text-white">Candidate model:</span> {trainingRun.candidate_model_version ?? "Pending"}</p>
+                                    <p className="text-xs leading-5 text-slate-400">
+                                        Candidate artefacts require clinical validation before they can support any screening workflow.
+                                    </p>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-slate-300">
+                                    Approve this sample to add it to the reviewed dataset and start a retraining run.
+                                </p>
+                            )}
+                            {trainingError && (
+                                <p className="mt-3 text-sm text-red-400">{trainingError}</p>
+                            )}
                         </div>
                     </div>
 

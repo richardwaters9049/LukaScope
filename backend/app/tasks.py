@@ -1,6 +1,7 @@
 from app.config import get_settings
 from app.database import SessionLocal
-from app.ml.inference import generate_heatmap, run_model_inference
+from app.ml.inference import generate_heatmap
+from app.ml.model_adapter import get_model_adapter
 from app.ml.training import approved_training_count, write_candidate_artifact
 from app.models import AnalysisJob, JobStatus, Result, TrainingRun, now_utc
 
@@ -16,12 +17,12 @@ def run_inference(job_id: str) -> str:
         job.updated_at = now_utc()
         db.commit()
 
-        classification, confidence = run_model_inference(job.sample.storage_path, settings)
+        prediction = get_model_adapter(settings).predict(job.sample.storage_path)
         result = Result(
             sample_id=job.sample_id,
-            classification=classification.value,
-            confidence=round(confidence * 100, 2),
-            model_version=settings.active_model_version,
+            classification=prediction.classification.value,
+            confidence=round(prediction.confidence * 100, 2),
+            model_version=prediction.model_version,
             heatmap_path="pending",
         )
         db.add(result)
@@ -65,5 +66,12 @@ def run_retraining(training_run_id: str) -> str:
         run.updated_at = now_utc()
         db.commit()
         return version
+    except Exception:
+        run = db.get(TrainingRun, training_run_id)
+        if run is not None:
+            run.status = JobStatus.failed.value
+            run.updated_at = now_utc()
+            db.commit()
+        raise
     finally:
         db.close()

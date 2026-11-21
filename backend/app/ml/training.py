@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sqlalchemy.orm import Session
@@ -16,11 +17,17 @@ def write_candidate_artifact(run_id: str, approved_count: int, settings: Setting
     version = f"candidate-{run_id[:8]}"
     target = settings.storage_root / "models" / f"{version}.json"
     target.parent.mkdir(parents=True, exist_ok=True)
-    metrics = {
-        "approved_sample_count": approved_count,
-        "sensitivity": None,
-        "specificity": None,
-        "status": "candidate_requires_approval",
+    metadata = {
+        "model_version": version,
+        "model_type": "heuristic-candidate",
+        "created_at": datetime.now(UTC).isoformat(),
+        "metrics": {
+            "approved_sample_count": approved_count,
+            "sensitivity": None,
+            "specificity": None,
+            "status": "candidate_requires_approval",
+        },
+        "requires_clinical_validation": True,
     }
-    target.write_text(json.dumps(metrics, indent=2))
-    return version, json.dumps(metrics)
+    target.write_text(json.dumps(metadata, indent=2))
+    return version, json.dumps(metadata)

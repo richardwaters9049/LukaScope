@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     storage_root: Path = Path("./data/storage")
     asset_url_path: str = "/assets"
     active_model_version: str = "heuristic-v0.1"
+    active_model_type: str = "heuristic"
     active_model_path: Path = Path("./models/active/model.pt")
+    inference_mode: str = "heuristic"
     max_upload_bytes: int = 10 * 1024 * 1024
     run_jobs_inline: bool = False
 

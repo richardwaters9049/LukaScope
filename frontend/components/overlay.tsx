@@ -8,11 +8,12 @@ import { fetchAnalysisJob, type JobStatus } from '@/lib/api'
 type Props = {
     open: boolean
     jobId: string | null
+    samplePreviewUrl: string | null
     onComplete: (resultId: string) => void
     onError: (message: string) => void
 }
 
-export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Props) {
+export default function AnalysisOverlay({ open, jobId, samplePreviewUrl, onComplete, onError }: Props) {
     const [stage, setStage] = useState<'scan' | 'detect' | 'explain'>('scan')
     const [status, setStatus] = useState<JobStatus>('queued')
     const [confidence, setConfidence] = useState(72)
@@ -22,7 +23,7 @@ export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Pr
     const copy = {
         scan: {
             title: 'Scanning sample…',
-            body: 'Segmenting cells, normalizing staining, and extracting morphological features from the slide.',
+            body: 'Segmenting cells, normalising staining, and extracting morphological features from the slide.',
         },
         detect: {
             title: 'Detecting abnormal cells…',
@@ -110,11 +111,12 @@ export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Pr
                             {/* IMAGE */}
                             <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-white/10 bg-black/40">
                                 <Image
-                                    src="/images/sample_2N_detected.png"
-                                    alt="Sample"
+                                    src={samplePreviewUrl ?? "/images/sample_2N_detected.png"}
+                                    alt="Uploaded blood smear sample"
                                     fill
                                     sizes="(min-width: 768px) 50vw, 100vw"
                                     className="object-contain"
+                                    unoptimized={Boolean(samplePreviewUrl)}
                                     priority
                                 />
 
@@ -128,14 +130,7 @@ export default function AnalysisOverlay({ open, jobId, onComplete, onError }: Pr
                                         animate={{ opacity: 0.8 }}
                                         className="absolute inset-0"
                                     >
-                                        <Image
-                                            src="/images/shap_heatmap.png"
-                                            alt="Heatmap"
-                                            fill
-                                            sizes="(min-width: 768px) 50vw, 100vw"
-                                            className="object-contain"
-                                            priority
-                                        />
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_42%_45%,rgba(239,68,68,0.55),rgba(14,165,233,0.22)_42%,rgba(15,23,42,0)_70%)] mix-blend-screen" />
                                     </motion.div>
                                 )}
                             </div>

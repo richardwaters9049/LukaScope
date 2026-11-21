@@ -41,6 +41,21 @@ export type ReviewPayload = {
   notes?: string;
 };
 
+export type TrainingRun = {
+  id: string;
+  status: JobStatus;
+  candidate_model_version: string | null;
+  approved_sample_count: number;
+  metrics: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TrainingRunCreated = {
+  training_run_id: string;
+  status: JobStatus;
+};
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export function backendAssetUrl(path: string) {
@@ -98,6 +113,14 @@ export function submitReview(resultId: string, payload: ReviewPayload) {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export function createTrainingRun() {
+  return request<TrainingRunCreated>("/api/training-runs", { method: "POST" });
+}
+
+export function fetchTrainingRun(trainingRunId: string) {
+  return request<TrainingRun>(`/api/training-runs/${trainingRunId}`, { cache: "no-store" });
 }
 
 export function displayClassification(value: string) {
