@@ -11,6 +11,9 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^react$': '<rootDir>/../node_modules/react',
+    '^react-dom$': '<rootDir>/../node_modules/react-dom',
+    '^react/jsx-runtime$': '<rootDir>/../node_modules/react/jsx-runtime',
   },
   modulePathIgnorePatterns: ['<rootDir>/.next/'],
   testMatch: [

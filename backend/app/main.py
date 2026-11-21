@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import json
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
@@ -12,7 +13,7 @@ from app.config import get_settings
 from app.database import get_db, init_db
 from app.job_queue import enqueue_inference, enqueue_retraining
 from app.models import AnalysisJob, JobStatus, Result, Review, ReviewStatus, Sample, TrainingRun, now_utc
-from app.schemas import AnalysisJobRead, HealthRead, ResultRead, ReviewCreate, ReviewRead, SampleCreated
+from app.schemas import AnalysisJobRead, HealthRead, ResultRead, ReviewCreate, ReviewRead, SampleCreated, TrainingRunRead
 from app.storage import asset_url, ensure_storage, promote_for_training, save_upload
 
 
@@ -53,6 +54,24 @@ def result_to_schema(result: Result) -> ResultRead:
         heatmap_url=asset_url(result.heatmap_path),
         review_status=result.review_status,
         created_at=result.created_at,
+    )
+
+
+def training_run_to_schema(training_run: TrainingRun) -> TrainingRunRead:
+    metrics = None
+    if training_run.metrics_json:
+        try:
+            metrics = json.loads(training_run.metrics_json)
+        except json.JSONDecodeError:
+            metrics = {"raw": training_run.metrics_json}
+    return TrainingRunRead(
+        id=training_run.id,
+        status=training_run.status,
+        candidate_model_version=training_run.candidate_model_version,
+        approved_sample_count=training_run.approved_sample_count,
+        metrics=metrics,
+        created_at=training_run.created_at,
+        updated_at=training_run.updated_at,
     )
 
 
@@ -160,3 +179,11 @@ def create_training_run(db: Session = Depends(get_db)) -> dict[str, str]:
     db.commit()
     enqueue_retraining(training_run.id)
     return {"training_run_id": training_run.id, "status": training_run.status}
+
+
+@app.get("/api/training-runs/{training_run_id}", response_model=TrainingRunRead)
+def get_training_run(training_run_id: str, db: Session = Depends(get_db)) -> TrainingRunRead:
+    training_run = db.get(TrainingRun, training_run_id)
+    if training_run is None:
+        raise HTTPException(status_code=404, detail="Training run not found.")
+    return training_run_to_schema(training_run)

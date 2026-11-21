@@ -61,6 +61,25 @@ def test_upload_rejects_non_image_extension(client):
     assert response.status_code == 400
 
 
+def test_upload_rejects_corrupt_image(client):
+    response = client.post(
+        "/api/samples",
+        files={"file": ("sample.png", BytesIO(b"not an image"), "image/png")},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Uploaded file is not a valid image."
+
+
+def test_upload_rejects_oversized_image(client):
+    response = client.post(
+        "/api/samples",
+        files={"file": ("sample.png", BytesIO(b"x" * (10 * 1024 * 1024 + 1)), "image/png")},
+    )
+
+    assert response.status_code == 413
+
+
 def test_results_list_returns_completed_results(client):
     upload = upload_sample(client)
 
@@ -103,3 +122,17 @@ def test_training_run_uses_reviewed_data_only(client):
 
     assert response.status_code == 202
     assert response.json()["training_run_id"]
+
+    training_run = client.get(f"/api/training-runs/{response.json()['training_run_id']}")
+    assert training_run.status_code == 200
+    body = training_run.json()
+    assert body["status"] == "completed"
+    assert body["approved_sample_count"] == 1
+    assert body["candidate_model_version"].startswith("candidate-")
+    assert body["metrics"]["requires_clinical_validation"] is True
+
+
+def test_missing_resources_return_404(client):
+    assert client.get("/api/analysis-jobs/missing").status_code == 404
+    assert client.get("/api/results/missing").status_code == 404
+    assert client.get("/api/training-runs/missing").status_code == 404

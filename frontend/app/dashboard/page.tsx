@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/ui/nav";
 import { Input } from "@/components/ui/input";
@@ -37,17 +37,27 @@ const uploadSteps = [
     { label: "Review", dot: "bg-sky-300", gradient: "from-sky-200 to-blue-400" },
 ];
 
+const isAllowedFile = (f: File) => {
+    if (["image/jpeg", "image/png", "image/tiff"].includes(f.type)) return true;
+    return /\.(jpe?g|png|tiff?)$/i.test(f.name);
+};
+
 export default function DashboardPage() {
     const router = useRouter();
     const [analysing, setAnalysing] = useState(false);
     const [jobId, setJobId] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
+    const [samplePreviewUrl, setSamplePreviewUrl] = useState<string | null>(null);
+    const samplePreviewUrlRef = useRef<string | null>(null);
     const [error, setError] = useState("");
 
-    const isAllowedFile = (f: File) => {
-        if (["image/jpeg", "image/png", "image/tiff"].includes(f.type)) return true;
-        return /\.(jpe?g|png|tiff?)$/i.test(f.name);
-    };
+    useEffect(() => {
+        return () => {
+            if (samplePreviewUrlRef.current) {
+                URL.revokeObjectURL(samplePreviewUrlRef.current);
+            }
+        };
+    }, []);
 
     const handleUpload = async () => {
         if (!file) {
@@ -112,7 +122,7 @@ export default function DashboardPage() {
                             <CardDescription className="text-slate-200">
                                 The demo now runs through a Python FastAPI analysis backend,
                                 Redis worker queue, Postgres metadata layer, and explainability
-                                artifacts for a production-shaped workflow.
+                                artefacts for a production-shaped workflow.
                             </CardDescription>
 
                             <CardDescription className="text-slate-200">
@@ -182,7 +192,18 @@ export default function DashboardPage() {
                                 disabled={analysing}
                                 onChange={(e) => {
                                     const selected = e.target.files?.[0] ?? null;
+                                    if (samplePreviewUrlRef.current) {
+                                        URL.revokeObjectURL(samplePreviewUrlRef.current);
+                                        samplePreviewUrlRef.current = null;
+                                    }
                                     setFile(selected);
+                                    if (selected && isAllowedFile(selected)) {
+                                        const previewUrl = URL.createObjectURL(selected);
+                                        samplePreviewUrlRef.current = previewUrl;
+                                        setSamplePreviewUrl(previewUrl);
+                                    } else {
+                                        setSamplePreviewUrl(null);
+                                    }
                                     setJobId(null);
                                     setError("");
                                 }}
@@ -298,6 +319,7 @@ export default function DashboardPage() {
             <AnalysisOverlay
                 open={analysing}
                 jobId={jobId}
+                samplePreviewUrl={samplePreviewUrl}
                 onComplete={(resultId) => router.push(`/results/${resultId}`)}
                 onError={(message) => {
                     setAnalysing(false);

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -62,3 +63,13 @@ class HealthRead(BaseModel):
     redis: str
     model_available: bool
     active_model_version: str
+
+
+class TrainingRunRead(BaseModel):
+    id: str
+    status: JobStatus
+    candidate_model_version: str | None
+    approved_sample_count: int
+    metrics: dict[str, Any] | None
+    created_at: datetime
+    updated_at: datetime
